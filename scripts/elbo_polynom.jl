@@ -20,9 +20,9 @@ A = randn((5,5));
 # define loss function
 Entq(Σ) = -0.5*log(det(Σ))
 Entq(γ,δ) = -γ.-log.(δ.*gamma.(γ)).+(1 .+γ).*digamma.(γ)
-Elogp(X,y,θh,Σ,γ,δ) = 0.5*(y'*y.-θh'*X'*y.-y'*X*θh+
-tr((X'*X+δ./(γ.-1).*I).*(θh*θh'+Σ))+log.(δ).-digamma.(γ))
-loss(X,y,θh,Σ,γ,δ)= Entq(Σ)+Entq(γ,δ)+Elogp(X,y,θh,Σ,γ,δ)
+Elogp(X,y,θh,Σ,γ,δ) = 0.5*(y'*y .- θh'*X'*y .- y'*X*θh .+
+tr((X'*X+δ[1]./(γ[1].-1)*I)*(θh*θh'+Σ)) .+ log.(δ) .- digamma.(γ))
+loss(X,y,θh,Σ,γ,δ)= Entq(Σ)+sum(Entq(γ,δ))+sum(Elogp(X,y,θh,Σ,γ,δ))
 
 
 data = Iterators.repeated((X,y),10000)
