@@ -1,0 +1,708 @@
+%% LyX 2.3.4.2 created this file.  For more info, see http://www.lyx.org/.
+%% Do not edit unless you really know what you are doing.
+\documentclass[11pt,oneside,american,czech]{book}
+\usepackage[T1]{fontenc}
+\usepackage[utf8]{inputenc}
+\usepackage[a4paper]{geometry}
+\geometry{verbose,tmargin=4cm,bmargin=3cm,lmargin=3cm,rmargin=2cm,headheight=0.8cm,headsep=1cm,footskip=0.5cm}
+\pagestyle{headings}
+\setcounter{secnumdepth}{3}
+\usepackage{url}
+\usepackage{amsmath}
+\usepackage{amsthm}
+\usepackage{amssymb}
+\usepackage{graphicx}
+\usepackage{setspace}
+
+\makeatletter
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% Textclass specific LaTeX commands.
+\newenvironment{lyxlist}[1]
+	{\begin{list}{}
+		{\settowidth{\labelwidth}{#1}
+		 \setlength{\leftmargin}{\labelwidth}
+		 \addtolength{\leftmargin}{\labelsep}
+		 \renewcommand{\makelabel}[1]{##1\hfil}}}
+	{\end{list}}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% User specified LaTeX commands.
+%% Font setup: please leave the LyX font settings all set to 'default'
+%% if you want to use any of these packages:
+
+%% Use Times New Roman font for text and Belleek font for math
+%% Please make sure that the 'esint' package is turned off in the
+%% 'Math options' page.
+\usepackage[varg]{txfonts}
+
+%% Use Utopia text with Fourier-GUTenberg math
+%\usepackage{fourier}
+
+%% Bitstream Charter text with Math Design math
+%\usepackage[charter]{mathdesign}
+
+%%---------------------------------------------------------------------
+
+%% Make the multiline figure/table captions indent so that the second
+%% line "hangs" right below the first one.
+%\usepackage[format=hang]{caption}
+
+%% Indent even the first paragraph in each section
+\usepackage{indentfirst}
+
+%%---------------------------------------------------------------------
+
+%% Disable page numbers in the TOC. LOF, LOT (TOC automatically
+%% adds \thispagestyle{chapter} if not overriden
+%\addtocontents{toc}{\protect\thispagestyle{empty}}
+%\addtocontents{lof}{\protect\thispagestyle{empty}}
+%\addtocontents{lot}{\protect\thispagestyle{empty}}
+
+%% Shifts the top line of the TOC (not the title) 1cm upwards 
+%% so that the whole TOC fits on 1 page. Additional page size
+%% adjustment is performed at the point where the TOC
+%% is inserted.
+%\addtocontents{toc}{\protect\vspace{-1cm}}
+
+%%---------------------------------------------------------------------
+
+% completely avoid orphans (first lines of a new paragraph on the bottom of a page)
+\clubpenalty=9500
+
+% completely avoid widows (last lines of paragraph on a new page)
+\widowpenalty=9500
+
+% disable hyphenation of acronyms
+\hyphenation{CDFA HARDI HiPPIES IKEM InterTrack MEGIDDO MIMD MPFA DICOM ASCLEPIOS MedInria}
+
+%%---------------------------------------------------------------------
+
+%% Print out all vectors in bold type instead of printing an arrow above them
+\renewcommand{\vec}[1]{\boldsymbol{#1}}
+\newcommand{\R}{\mathbb{R}}
+\newtheorem{definition}{Definice}[section]
+\newtheorem{vet}{Věta}[section]
+\newtheorem*{poz}{Poznámka}
+\newtheorem*{pří}{Příklad}
+\newcommand{\N}{\mathbb{N}}
+\newcommand{\C}{\mathbb{C}}
+\newcommand{\Z}{\mathbb{Z}}
+%  Matematika
+\newcommand{\ee}{\mathrm{e}} %eulerovo číslo
+\newcommand{\ii}{\mathrm{i}} %imaginární jednotka
+\newcommand{\inR}{\in \mathbb{R}}
+\newcommand{\dd}{\mathrm{d}}
+\newcommand\KLDeq{\mathrel{\stackrel{\makebox[0pt]{\mbox{\normalfont\tiny KLD}}}{\approx}}}
+\newcommand*{\matr}[1]{\mathbfit{#1}}
+\newcommand*{\tran}{^{\mkern-1.5mu\mathsf{T}}}
+\newcommand*{\conj}[1]{\overline{#1}}
+\newcommand*{\hermconj}{^{\mathsf{H}}}
+\DeclareMathOperator{\tr}{tr}
+
+% Jednotky
+\newcommand{\unit}[1]{\,\mathrm{#1}} %jednotky zadávejte pomocí tohoto příkazu
+\renewcommand{\deg}{\ensuremath{\mathring{\;}}} %symbol stupně
+\newcommand{\celsius}{\ensuremath{\deg\mathrm{C}}} %stupně celsia
+
+%(hodnota plus mínus chyba) jednotka
+\newcommand{\hodn}[3]{(#1 \pm #2)\unit{#3}} 
+
+%veličina [jednotka] do hlavičky tabulky
+\newcommand{\tabh}[2]{\ensuremath{#1\,[\mathrm{#2}]}} 
+% Replace standard \cite by the parenthetical variant \citep
+%\renewcommand{\cite}{\citep}
+
+\makeatother
+
+\usepackage{babel}
+\begin{document}
+\def\documentdate{7. \v{c}ervence 2020}
+
+%%\def\documentdate{\today}
+
+\pagestyle{empty}
+{\centering
+
+\noindent %
+\begin{minipage}[c]{3cm}%
+\noindent \begin{center}
+\includegraphics[width=3cm,height=3cm,keepaspectratio]{Images/TITLE/cvut}
+\par\end{center}%
+\end{minipage}%
+\begin{minipage}[c]{0.6\linewidth}%
+\begin{center}
+\textsc{\large{}České vysoké učení technické v Praze}{\large{}}\\
+{\large{}Fakulta jaderná a fyzikálně inženýrská}
+\par\end{center}%
+\end{minipage}%
+\begin{minipage}[c]{3cm}%
+\noindent \begin{center}
+\includegraphics[width=3cm,height=3cm,keepaspectratio]{Images/TITLE/fjfi}
+\par\end{center}%
+\end{minipage}
+
+\vspace{3cm}
+
+\textbf{\huge{}Generativní modely dat popsaných stromovou strukturou}{\huge\par}
+
+\vspace{1cm}
+
+\selectlanguage{american}%
+\textbf{\huge{}Generative models of tree structured data}{\huge\par}
+
+\selectlanguage{czech}%
+\vspace{2cm}
+
+{\large{}Bakalářská práce}{\large\par}
+
+}
+
+\vfill{}
+
+\begin{lyxlist}{MMMMMMMMM}
+\begin{singlespace}
+\item [{Autor:}] \textbf{Jakub Bureš}
+\item [{Vedoucí~práce:}] \textbf{Doc. Ing. Václav Šmídl, Ph.D.}
+\item [{Konzultant:}] \textbf{Doc. Ing. Tomáš Pevný, Ph.D.}
+\item [{Akademický~rok:}] 2019/2020
+\end{singlespace}
+\end{lyxlist}
+\newpage{}
+
+~
+
+\vfill{}
+
+\begin{center}
+\begin{enumerate}	
+\item Seznamte se s popisem dat pomocí stromové struktury. Zvláštní pozornost věnujte metodám více instančního učení (multiple instance learning). Seznamte se s konceptem vnořeného prostoru (embedded space) a jeho reprezentace pomocí neuronových sítí. 
+\item	
+Seznamte se se základními generativními modely dat popsaných vektorem příznaků. Zvláštní pozornost věnujte metodám typu autoencoder a jejich variační formě. Demonstrujte vlastnosti modelů na jednoduchých příkladech. V maximální míře využijte dostupné knihovny pro generativní modely.
+\item
+Navrhněte několik příkladů typů dat se stromovou strukturou a pro každý z nich navrhněte generativní model. Navrhněte algoritmus pro určení jeho parametrů z dat a diskutujte vhodnost jednotlivých architektur neuronových sítí.
+\item
+Seznamte se s různými druhy apriorních rozložení používaných na latentní proměnné autoencoderu. Odvoďte algoritmy odhadu jejich parametrů a srovnejte jejich výsledky se základním modelem. Diskutujte výsledné odhady.
+\item	
+Vyvinutou metodu aplikujte na vhodně zvolená reálná data a diskutujte vliv zvoleného apriorního rozložení na výsledky.
+\end{enumerate}
+\par\end{center}
+
+\vfill{}
+
+~\newpage{}
+
+~
+
+\vfill{}
+
+\begin{center}
+- Zadání práce (zadní strana) -
+\par\end{center}
+
+\vfill{}
+
+~\newpage{}
+
+\noindent \emph{\Large{}Poděkování:}{\Large\par}
+
+\noindent Chtěl bych zde poděkovat především svému školiteli panu Doc. Ing. Václavu Šmídlovi, Ph.D.
+za pečlivost, ochotu, vstřícnost a odborné i lidské zázemí při vedení
+mé bakalářské práce. Dále děkuji svému konzultantovi panu Doc. Ing. Tomáši Pevnému, Ph.D.
+
+\vfill
+
+\noindent \emph{\Large{}Čestné prohlášení:}{\Large\par}
+
+\noindent Prohlašuji, že jsem tuto práci vypracoval samostatně a uvedl
+jsem všechnu použitou literaturu.
+
+\bigskip{}
+
+\noindent V Praze dne \documentdate\hfill{}Jakub Bureš
+
+\vspace{2cm}
+
+\newpage{}
+
+\begin{onehalfspace}
+\noindent \emph{Název práce:} 
+
+\noindent \textbf{Generativní modely dat popsaných stromovou strukturou}
+\end{onehalfspace}
+
+\bigskip{}
+
+\noindent \emph{Autor:} Jakub Bureš
+
+\bigskip{}
+
+\noindent \emph{Obor:} Matematické inženýrství
+ \bigskip{}
+
+\noindent \emph{Zaměření:} Aplikované matematicko-stochastické metody
+
+\bigskip{}
+
+\noindent \emph{Druh práce:} Bakalářská práce
+
+\bigskip{}
+
+\noindent \emph{Vedoucí práce:} Doc. Ing. Václav Šmídl, Ph.D.\\
+ÚTIA AV ČR
+Pod vodárenskou věží 4
+182 00 Praha 8
+
+\bigskip{}
+
+\noindent \emph{Konzultant:} Doc. Ing. Tomáš Pevný, Ph.D. \\
+Katedra počítačů
+FEL ČVUT Praha
+Technická 1902/2
+166 27 Praha 6 - Dejvice
+\bigskip{}
+
+\noindent \emph{Abstrakt:} Abstrakt max. na 10 řádků. Abstrakt max.
+na 10 řádků. Abstrakt max. na 10 řádků. Abstrakt max. na 10 řádků.
+Abstrakt max. na 10 řádků. Abstrakt max. na 10 řádků. Abstrakt max.
+na 10 řádků. Abstrakt max. na 10 řádků. Abstrakt max. na 10 řádků.
+Abstrakt max. na 10 řádků. Abstrakt max. na 10 řádků. Abstrakt max.
+na 10 řádků. Abstrakt max. na 10 řádků. Abstrakt max. na 10 řádků.
+Abstrakt max. na 10 řádků. Abstrakt max. na 10 řádků. Abstrakt max.
+na 10 řádků. Abstrakt max. na 10 řádků. Abstrakt max. na 10 řádků.
+Abstrakt max. na 10 řádků. Abstrakt max. na 10 řádků. Abstrakt max.
+na 10 řádků. Abstrakt max. na 10 řádků. Abstrakt max. na 10 řádků.
+Abstrakt max. na 10 řádků. Abstrakt max. na 10 řádků. Abstrakt max.
+na 10 řádků. Abstrakt max. na 10 řádků. Abstrakt max. na 10 řádků. 
+
+\bigskip{}
+
+\noindent \emph{Klíčová slova:} klíčová slova (nebo výrazy) seřazená
+podle abecedy a oddělená čárkou
+
+\vfill{}
+~
+
+\selectlanguage{american}%
+\begin{onehalfspace}
+\noindent \emph{Title:}Generative models of tree structured data 
+
+\noindent \textbf{Generative models of tree structured data}
+\end{onehalfspace}
+
+\bigskip{}
+
+\noindent \emph{Author:} Jakub Bureš
+
+\bigskip{}
+
+\noindent \emph{Abstract:} Max. 10 lines of English abstract text.
+Max. 10 lines of English abstract text. Max. 10 lines of English abstract
+text. Max. 10 lines of English abstract text. Max. 10 lines of English
+abstract text. Max. 10 lines of English abstract text. Max. 10 lines
+of English abstract text. Max. 10 lines of English abstract text.
+Max. 10 lines of English abstract text. Max. 10 lines of English abstract
+text. Max. 10 lines of English abstract text. Max. 10 lines of English
+abstract text. Max. 10 lines of English abstract text. Max. 10 lines
+of English abstract text. Max. 10 lines of English abstract text.
+Max. 10 lines of English abstract text. Max. 10 lines of English abstract
+text. Max. 10 lines of English abstract text. Max. 10 lines of English
+abstract text. Max. 10 lines of English abstract text. Max. 10 lines
+of English abstract text. Max. 10 lines of English abstract text.
+Max. 10 lines of English abstract text. Max. 10 lines of English abstract
+text. Max. 10 lines of English abstract text.
+
+\bigskip{}
+
+\noindent \emph{Key words:} keywords in alphabetical order separated
+by commas
+
+\selectlanguage{czech}%
+\newpage{}
+
+\pagestyle{plain}
+
+\tableofcontents{}
+
+\newpage{}
+
+\chapter*{Úvod}
+\addcontentsline{toc}{chapter}{Úvod}
+\section{Příklad}
+
+
+Ze začátku uvažujme jednoduchý příklad, který naznačí následující problematiku . Předpokládejme že máme trénovací množinu obsahující $n$ pozorování $x$, nebo-li $\textbf{X} = (x_1,\dots , x_n)$. Dále máme ke každému $x$ právě jedno pozorování $t$, psáno $\textbf{t} =(t_1,\dots, t_n)$. Celé to můžeme zapsat jako $(x_1,\dots, x_n)~\longmapsto~(t_1,\dots, t_n)$.\\
+Naším cílem je využít tuto trénovací množinu k predikci hodnot $\hat{t}$ a tedy k určení nové hodnoty $\hat{x}$, jakožto výstupní proměnné. Pozorované hodnoty $(t_1,\dots, t_n)$ jsou ale zatíženy nepřesnostmi a přestože závislost $(t_1,\dots, t_n)$ může být na $(x_1,\dots , x_n)$ kvadratická, nemusí se podařit najít kvadratickou funkci tak, aby procházela všemi body. Naším cílem je tedy nafitovat data pomocí polynomické funkce řádu $n$ ve tvaru
+\begin{equation}
+y(x, \textbf{w}) = w_0 + w_1x + w_2x^2 + \dots + w_nx^n = \sum_{i = 0}^{n} {w_{i}x^{i}}
+\end{equation}
+Tato funkce je lineární v neznámých parametrech $\textbf{w}$. Takové modely nazýváme lineární a jejich vlastnosti budeme nadále využívat.\\
+Abychom našli ten nejlepší možný fit, je nutno pomocí derivace minimalizovat tzv. chybovou funkci $E(\textbf{w})$, která je tvaru
+\begin{equation}
+E(\textbf{w}) = \frac{1}{2}\sum_{n = 1}^{N}[y(x_n, \textbf{w}) - t_n]^2
+\end{equation}
+Pomocí minimalizace získáme parametry \textbf{w} a jsme tudíž schopni sestavit předpis polynomu, který nejlépe daná data proloží.
+Je zde několik problémů, např.: jaký řád polynomu zvolit, více popsáno v ... . \\
+Tento jednoduchý příklad lze modifikovat mnoha způsoby, které budeme postupně rozebírat. Nejprve budeme ale potřebovat základy z teorie pravděpodobnosti. 
+\chapter{Teorie pravděpodobnosti}
+
+\pagestyle{headings}
+\section{Definice pravděpodobnosti}
+\begin{definition}{(Kolmogorova definice pravděpodobnosti).} 
+Mějme množinu $\Omega$ vybavenou $\sigma$-algebrou $\mathcal{A}$, tedy souborem podmnožin obsahujícím $\Omega$ a uzavřeným na doplňky a spočetná sjednocení. Pak libovolnou funkci $P : \mathcal{A} \to \mathbb{R}$ , která splňuje :
+\begin{enumerate}
+\item $(\forall A\in \mathcal{A})(P(A) \geq 0).$
+\item$ P(\Omega) = 1 $
+\item $\forall A_j $ disjunktní platí $P(\sum_{j=1}^{\infty}A_j) = \sum_{j=1}^{\infty}P(A_j)$
+\end{enumerate}
+\end{definition}
+\begin{vet}{(Vlastnosti P).} Mějme pravděpodobnostní prostor $(\Omega,\mathcal{A}, P)$ a něcht $(\forall j \in \mathbb{N})(A_j \in \mathcal{A})$ a $B \in \mathcal{A}$. Pak platí:
+\begin{enumerate}
+
+
+\item $P(\emptyset) = 0$,
+\item Aditivita:  $P(\sum_{j=1}^{n}A_j) = \sum_{j=1}^{n}P(A_j)$,
+\item Monotonie: $A\subset B \Rightarrow P(A) \leq P(B)$,
+\item Subtraktivita: $A\subset B \Rightarrow P(B\smallsetminus A) = P(B) - P(A)$,
+\item Omezenost: $(\forall A \in \mathcal{A})(P(A)\leqslant 1) $,
+\item Komplementarita: $A \in \mathcal{A} \Rightarrow P(A^C) = 1 - P(A)$
+\end{enumerate}
+\end{vet}
+\begin{definition}{(Podmíněná pravděpodobnost).} Nechť $A,B \in \mathcal{A}$ a $P(B)>0$. Pak definujeme podmíněnou pravděpodobnost:
+\begin{equation}
+P(A|B) = \frac{P(A,B)}{P(B)}
+\end{equation}
+
+\end{definition}
+\begin{vet}{(Součinové pravidlo).}
+Nechť $A_1,\ldots,A_n \in \mathcal{A} $ a dále nechť také $P(A_1,\ldots,A_n ) > 0$. Potom platí:
+\begin{equation}
+P(A_1,\ldots,A_n) = P(A_1)\cdot P(A_2|A_1) \cdot P(A_3| A_2, A_1)\cdot \ldots \cdot P(A_n|A_1,\ldots,A_{n-1})
+\end{equation}
+\end{vet}
+\begin{vet}{(Bayseova věta).} Nechť $A \in \mathcal{A} $ a $P(B) \neq 0$. Potom platí:
+\begin{equation}
+P(A,B) = \frac{P(B,A)P(A)}{P(B)}
+\end{equation}
+\end{vet}
+\begin{poz}
+$P(A)$ nazýváme prior a $P(A|B)$ nazýváme posterior.
+\end{poz}
+\begin{vet}{(Nezávislost jevů).} Nechť $A_j \in \mathcal{A} (\forall j \in \mathbb{N})$. Potom jevy nazveme nezávislé pravě tehdy když platí podmínka
+\begin{equation}
+P(A_1,\ldots,A_k) = \prod_{i=1}^{k} P(A_i)
+\end{equation}
+\end{vet}
+\section{Hustoty pravděpodobnosti}
+\begin{poz}
+Budeme uvažovat pouze spojitá rozdělení pravděpodobnosti.
+\end{poz}
+\begin{definition}{(Hustota pravděpodobnosti).}
+Hustotou pravděpodobnosti rozumíme spojitou funkci $f(x)$, která splňuje  následující dvě podmínky:
+\begin{enumerate}
+\item  $f(x) \geq 0$
+\item $\int_{-\infty}^{\infty}f(x)= 1$
+\end{enumerate}
+\end{definition}
+\begin{poz}
+Hustotu pravděpodobnosti lze definovat také pro vícerozměrné funkce $f(\textbf{x})$. Podmínky, které musí vícerozměrná hustota splňovat jsou analogické:
+\begin{enumerate}
+\item  $f(\textbf{x}) \geq 0$
+\item $\int_{-\infty}^{\infty}\cdot \ldots \cdot \int_{-\infty}^{\infty} f(\textbf{x})= 1$
+\end{enumerate}
+\end{poz}
+\subsection{Normální rozdělení}
+Nejdůležitější hustota pravděpodobnosti pro spojité proměnné se nazývá normální nebo také Gaussovo rozdělení. Jeho hustota je definována $\forall x \inR $ pomocí dvou parametrů $\mu \in \R$ a $\sigma^2 > 0$ jako
+\begin{equation}
+\mathcal{N}(\mu,\sigma^2) = \frac{1}{\sqrt{2\pi\sigma^2}}\exp\left\lbrace {-\frac{(x-\mu)^2}{2\sigma^2}}\right\rbrace 
+\end{equation} 
+
+Uveďme zde dvě důležité charakteristiky Gaussova rozdělení a to jsou střední hodnota (někdy také očekávaná hodnota) $\mathbb{E}(X)$ alternativně značeno $\langle X\rangle$ rozptyl (případně variance) $\mathbb{D}(X)$ alternativně značeno $var(X)$.
+\begin{itemize}
+\item $\mathbb{E}(X) = \int_{-\infty}^{\infty}x\frac{1}{\sqrt{2\pi\sigma^2}}\ee^{-\frac{(x-\mu)^2}{2\sigma^2}} \dd x = \mu$
+\item  $\mathbb{D}(X) = \int_{-\infty}^{\infty}x^2\frac{1}{\sqrt{2\pi\sigma^2}}\ee^{-\frac{(x-\mu)^2}{2\sigma^2}} \dd x = \sigma^2$
+\end{itemize}
+ Můžeme definovat také d-rozměrnou hustotu a to vztahem
+\begin{equation}
+\mathcal{N}(\mu,\Sigma) = \frac{1}{\sqrt{(2\pi)^d \lvert \Sigma \rvert}}\exp\left\lbrace{-\frac{1}{2}(\textbf{x}-\mu)^{T}\Sigma^{-1}(\textbf{x}-\mu)}\right\rbrace
+\end{equation}
+kde $\Sigma$ je d$\times$d kovariační matice a $\mu$ je vektor středních hodnot.
+\subsection{Gamma rozdělení}
+Gamma rozdělení je definováno stejně jako normální rozdělení pomocí dvou parametrů $\alpha > 0$ a $\beta > 0$. Jeho hustota pravděpodobnosti má smysl pro $\forall x > 0$ a můžeme ji najít v několika možných tvarech. My uvedeme tento:
+\begin{equation}
+\Gamma(\alpha,\beta) = \frac{\beta^{\alpha}}{\Gamma (\alpha)}\exp\left\lbrace {-\beta x}\right\rbrace  x^{\alpha -1}
+\end{equation} 
+Stejně jako u Gaussova rozdělení uvedeme některé důležité charakteristiky.
+\begin{itemize}
+\item $\mathbb{E}(X) = \int_{0}^{\infty}x \frac{\beta^{\alpha}}{\Gamma (\alpha)}\ee^{-\beta x} x^{\alpha -1} \dd x = \frac{\alpha}{\beta} $
+\item  $\mathbb{D}(X) = \int_{0}^{\infty}x^2 \frac{\beta^{\alpha}}{\Gamma (\alpha)}\ee^{-\beta x} x^{\alpha -1} \dd x = \frac{\alpha}{\beta^2} $
+\end{itemize}
+\subsection{Inverzní gamma rozdělení}
+Inverzní gamma rozdělení je gamma rozdělení akorát pro převrácenou hodnotu $x$, je tedy opět popsáno dvěma parametry $\alpha > 0$ a $\beta > 0$ a definováno pro $\forall x > 0$. Jeho hustotu můžeme zapsat následovně:
+\begin{equation}
+i\Gamma(\alpha,\beta) = \frac{\beta^{\alpha}}{\Gamma (\alpha)}\exp\left\lbrace{-\frac{\beta}{ x}}\right\rbrace x^{-\alpha -1}
+\end{equation} 
+Střední hodnota a rozptyl i$\Gamma(\alpha,\beta)$ nejsou ale definována pro $\alpha > 0$, platí:
+\begin{itemize}
+\item $\mathbb{E}(X) = \int_{0}^{\infty}x \frac{\beta^{\alpha}}{\Gamma (\alpha)}\ee^{-\frac{\beta}{ x}} x^{-\alpha -1} \dd x = \frac{\beta}{\alpha - 1} $, pro  $\alpha > 1$
+\item  $\mathbb{D}(X) = \int_{0}^{\infty}x^2 \frac{\beta^{\alpha}}{\Gamma (\alpha)}\ee^{-\frac{\beta}{ x}} x^{-\alpha -1} \dd x = \frac{\beta^2}{(\alpha -1)^2(\alpha - 2)^2}$, pro $\alpha > 2$
+\end{itemize}
+
+\chapter{Optimalizace}
+\section{Metoda nejmenších čtverců}
+Mějme soubor bodů o $n$ prvcích, tedy $\left(x_i, y_i\right) \forall i \in \hat{n}$. Chceme najít polynom předem daného stupně tak, aby co nejlépe prokládal dané body. Jinými slovy se pokusíme najít koeficienty $\theta_n$ daného polynomu. Mějme tedy sadu rovnic, kterou již zapíšeme ve formě matic následujícím způsobem:
+\begin{equation}
+\begin{pmatrix}
+y_1 \\
+y_2\\
+\vdots \\
+y_n
+\end{pmatrix}
+=
+\begin{pmatrix}
+1 & x_1 & x_1^2 & \dots & x_1^k \\
+1 & x_2 & x_2^2 & \dots & x_2^k \\
+\vdots & \ddots & & &\\
+1 & x_n & x_n^2 & \dots & x_n^k \\
+\end{pmatrix}
+\cdot
+\begin{pmatrix}
+\theta_1 \\
+\theta_2 \\
+\vdots \\
+\theta_n
+\end{pmatrix}
+\end{equation}
+ Pro jednoduchost budeme tímto maticovým zápisem rozumět následující rovnici
+\begin{equation}
+\textbf{y} = \mathbb{X} \cdot {\Theta}
+\end{equation}
+Naší cílem je získání parametrů $\Theta$, proto obě strany rovnice vynásobíme zleva $ \mathbb{X}^T$. Tím nám rovnice přejde do tvaru
+\begin{equation}
+\mathbb{X}^T\cdot\textbf{y} =\mathbb{X}^T\cdot \mathbb{X} \cdot {\Theta}
+\end{equation}
+Teď už stačí rovnici zleva vynásobit inverzní maticí $(\mathbb{X}^T\cdot \mathbb{X})^{-1}$. Dostaneme tak konečné řešení
+\begin{equation}
+\Theta = (\mathbb{X}^T \mathbb{X})^{-1}\mathbb{X}^{T}\textbf{y}
+\end{equation}
+
+Vidíme že pokud máme zadán soubor bodů $\left(x_i, y_i\right) \forall i \in \hat{n}$, není problém kýžené parametry získat.
+\section{Bayesovská lineární regrese}
+Uvažujme standardní problém na lineární regresi, avšak více specifikujme chyby $\varepsilon$, kterými je zatížen každý bod $y_i$ pro $\forall i \in  \hat{n}$.
+\begin{equation}
+\textbf{y} = \mathbb{X} \cdot {\Theta} + \epsilon
+\end{equation}
+
+kde $\varepsilon_i \sim \mathcal{N}(0,1)$ a pro jeho pravděpodobnost tudíž platí  $P(\varepsilon_i) \propto \exp(-\frac{1}{2}\varepsilon_i^2)$. \\
+Z rovnice (2.5) jednoduchou úpravou dostaneme
+\begin{equation}
+\epsilon = \textbf{y} -  \mathbb{X} \cdot {\Theta}
+\end{equation}
+Pokusme se tuto rovnost přepsat pomocí pravděpodobností. Využijeme vícerozměrné Gaussovo rozdělení (1.6).
+\begin{poz}
+Zanedbáváme normalizační konstantu, proto využíváme znak $\propto$.
+\end{poz}
+\begin{equation}
+ P(\epsilon) \propto P(\textbf{y}|\mathbb{X},\Theta) \propto \exp(-\frac{1}{2}(\textbf{y} - \mathbb{X}\Theta)^{T}(\textbf{y} - \mathbb{X}\Theta))
+\end{equation}
+Snažíme se získat pravděpodobnost $P(\Theta|\textbf{y},\mathbb{X})$, kterou získáme pomocí Bayesovy věty (1.3).
+\begin{equation}
+P(\Theta|\textbf{y},\mathbb{X}) = \frac{P(\textbf{y}|\mathbb{X},\Theta)P(\Theta|\mathbb{X})}{P(\textbf{y}|\mathbb{X})} \propto P(\textbf{y}|\mathbb{X},\Theta)P(\Theta|\mathbb{X}).
+\end{equation}
+K tomu abychom mohli pokračovat ve výpočtu $P(\Theta|\textbf{y},\mathbb{X})$, potřebujeme určit $P(\Theta|\mathbb{X})$. Jelikož je $\Theta$ nezávislé na $\mathbb{X}$, můžeme psát pouze $P(\Theta)$.\\
+Pro pravděpodobnost $P(\Theta)$ předpokládáme následující vztah:
+\begin{equation}
+ P(\Theta) = \mathcal{N}(0,\alpha^{-1}\mathbb{I}) \propto \exp(-\frac{1}{2}\Theta^{T}\Theta\alpha)
+\end{equation}
+Nyní můžeme pokračovat dosazením do (2.8):
+\begin{equation}.
+\begin{split}
+P(\textbf{y}|\mathbb{X},\Theta)P(\Theta|\mathbb{X})  & \propto  \exp(-\frac{1}{2}(\textbf{y} - \mathbb{X}\Theta)^{T}(\textbf{y} - \mathbb{X}\Theta)) \exp(-\frac{1}{2}\Theta^T\Theta\alpha) \\
+ & \propto
+\exp(-\frac{1}{2}(\textbf{y}^{T}\mathbb{Y}-\Theta^T\mathbb{X}^{T}\textbf{y}-\mathbb{Y}^{T}\mathbb{X}\Theta+\Theta^{T}\mathbb{X}^{T}\mathbb{X}\Theta+\Theta^{T}\Theta\alpha)) \\
+ & \propto
+ \exp(-\frac{1}{2}[\textbf{y}^{T}\textbf{y}-\Theta^{T}\mathbb{X}^{T}\textbf{y}-\textbf{y}^{T}\mathbb{X}\Theta + \Theta^{T}(\mathbb{X}^{T}\mathbb{X} + \alpha \mathbb{I})\Theta]) 
+\end{split}
+\end{equation}
+Pro dokončení je důležitý předpoklad tvaru řešení a to:
+\begin{equation*}
+P(\Theta|\textbf{y},\mathbb{X}) \propto \exp(-\frac{1}{2}(\Theta-\hat{\Theta})\Sigma^{-1}(\Theta-\hat{\Theta}) + z) \propto \exp(-\frac{1}{2}(\Theta-\hat{\Theta})\Sigma^{-1}(\Theta-\hat{\Theta}))\exp(z)
+\end{equation*}
+který dále pomocí prvního tvaru upravíme tak, abychom dokázali určit $\hat{\Theta}$, $\Sigma$ a $z$. Roznásobením dostaneme
+\begin{equation*}
+\exp(-\frac{1}{2}[\Theta^{T}\Sigma^{-1}\Theta - \hat{\Theta}^{T}\Sigma\Theta -\Theta^{T}\Sigma^{-1} \hat{\Theta} +  \hat{\Theta}^{T}\Sigma^{-1} \hat{\Theta}] + z)
+\end{equation*}
+z čehož už okamžitě plyne předpis pro 
+\begin{equation}
+\Sigma^{-1} = \mathbb{X}^{T}\mathbb{X} + \alpha \mathbb{I}
+\end{equation}
+Tento je výsledek je pro nás velmi důležitý a budeme jej i nadále využívat. \\
+ Přímo porovnáním také můžeme vidět, že
+\begin{equation*}
+-\textbf{y}\mathbb{X}\Theta = -\hat{\Theta}^{T}\Sigma^{-1}\Theta
+\end{equation*}
+Nyní z této rovnice jednoduchou úpravou a dosazením za $\Sigma$ dostaneme další velmi důležitý předpis pro $\hat{\Theta}$, a to 
+\begin{equation}
+\hat{\Theta} = \Sigma\mathbb{X}^{T}\textbf{y} = (\mathbb{X}^{T}\mathbb{X} + \alpha \mathbb{I})^{-1}\mathbb{X}^{T}\textbf{y}
+\end{equation}
+Pro $z$ nám zbývá
+\begin{equation*}
+z = \textbf{y}^{T}\textbf{y} - \hat{\Theta}^{T}\Sigma^{-1} \hat{\Theta}^{T}.
+\end{equation*}
+Používáme ale znak úměrnosti a $\exp(z)$ je pouze konstanta, můžeme ji tedy vynechat a dostaneme 
+\begin{equation*}
+ P(\Theta|\textbf{y},\mathbb{X}) \propto \exp(-\frac{1}{2}(\Theta-\hat{\Theta})\Sigma^{-1}(\Theta-\hat{\Theta}))
+\end{equation*}
+
+\section{Gradient Descent}
+Jedná se iterativní optimalizační metodu pomocí které hledáme minimum dané funkce. My se snažíme zminimalizovat funkci $L = (\mathbb{Y}-\mathbb{X}\Theta)^{T}(\mathbb{Y}-\mathbb{X}\Theta)$ (loss function), neboli funkci (2), pokud nebudeme provádět maticový zápis. Minimalizujeme $L$, tedy derivujeme dle vektoru $\Theta$ a dostaneme
+\begin{equation}
+\nabla_{\Theta}\ L = 2\mathbb{X}^{T}(\mathbb{X}\Theta - \mathbb{Y}).
+\end{equation}
+Použijeme bod $\textbf{a}$ funkce $L(\Theta)$ jako vychozí bod, ze kterého se pohybujeme ve směru záporného gradientu s krokem $\gamma$~$\in$~$\mathbb{R}_{+}$, který můžeme s každou iterací měnit. Toto provádíme, dokud nejsme v minimu funkce. Tento postup můžeme zapsat jako
+\begin{equation}
+a_{n+1} = a_{n} - \gamma \nabla_{\Theta} L(a_n)
+\end{equation}
+\subsection{ADAM}
+Předchozí metoda není tak rychlá, jak bychom pro výpočet minima funkce potřebovali. Používáme proto iterační gradientní metodu ADAM, která navíc používá druhý moment gradientu, popřípadě můžeme ladit i zápomínací koeficienty.
+
+\section{Divergence}
+Divergence  je funkce $D(.||.)$ : $S\times S$ $\to$ $\mathcal{R}$, kde je $S$ je prostor pravděpodobnostních rozdělení a které splňuje následující dvě podmínky:
+\begin{enumerate}
+\item  $D(p||q) \geq 0$
+\item  $D(p||q) = 0$ pro $p=q$
+\end{enumerate}
+Divergence do jisté popisuje vzdálenost nebo rozdíl mezi dvěma distribucemi. Jelikož divergence nemusí splňovat podmínku symetrie a trojúhelníkovou nerovnosti, nejedná se tedy o metriku, nýbrž o semimetriku.
+\subsection{f-divergence}
+Nejdůležitější skupinou divergencí jsou takzvané f-divergence. Jsou definovány pomocí konvexní funkce $f(x)$, kde $x>0$ a takové že $f(1) = 0$. Jsou tvaru
+\begin{equation}
+ D_f(P||q) = \int_{supp(q)} P(x)f{\left(\frac{q(x)}{P(x)}\right)}       \dd x
+\end{equation}
+kde $supp(q)$ značí nosič funkce $q(x)$.
+\subsubsection{Kullback-Leiblerova divergence}
+Pro nás bude užitečná tzv. Kullback-Leiblerova divergence, kde za funkci $f$ bereme přirozený logaritmus. To je rozhodně konvexní funkce pro kterou platí $\ln{1} = 0$. Tvar KL-divergence je následující:
+\begin{equation}
+ D_{KL}(p||q) = \int_{supp(q)} p(x)\ln{\left(\frac{q(x)}{p(x)}\right)}       \dd x
+\end{equation}
+
+Předvedeme příklad, kde je Kullback-Leiblerova divergence velmi užitečná.\\
+Pro začátek uvažujme pouze sadu dvou souřadnic $y_1$ a $y_2$ s  normálním rozdělením $\mathcal{N_\mathrm{i}}(\theta, 1)$ pro i $\in$1,2. Dále uvažujme jeden parametr $\theta$ $\sim$ $\mathcal{N}(0,\alpha)$ a nechť $\alpha$ má inverzní gamma rozdělení, tedy $\alpha$ $\sim$ $i\Gamma(0,0)$. 
+Snažíme se získat pravděpodobnosti parametrů $\theta$ a $\alpha$, tedy $P(\theta, \alpha|y_1,y_2)$. Tuto pravděpodobnost můžeme přepsat pomocí definice podmíněné pravděpodobnosti a řetězového pravidla jako
+\begin{equation}
+P(\theta, \alpha|y_1,y_2) = \frac{P(\theta, \alpha,y_1,y_2)}{P(y_1,y_2)} =  \frac{P(y_1|\theta) P(y_2|\theta)P(\theta)P(\alpha)}{P(y_1,y_2)}
+\end{equation} 
+Dosazením předpokladů do čitatele dostaneme:
+\begin{equation}
+P(y_1|\theta) P(y_2|\theta)P(\theta)P(\alpha) \propto \exp{\lbrace-\frac{1}{2}(y_1-\theta)^2\rbrace}\cdot  \exp{\lbrace-\frac{1}{2}(y_2-\theta)^2\rbrace}\cdot \frac{1}{\sqrt{\alpha}}\exp\lbrace-\frac{\theta^2}{2\alpha}\rbrace \cdot \frac{1}{\alpha} \dd\theta \dd\alpha
+\end{equation}
+Zdánlivě se nám může zdát určení jmenovatele jako jednoduché. Standardním způsobem bychom pravdědobnost $P(y_1,y_2)$ získáli tzv. marginalizací, nebo-li vyintegrováním přes $\theta$ a $\alpha$. 
+\begin{equation}
+\begin{split}
+P(y_1,y_2) & = \int P(\theta, \alpha,y_1,y_2) \dd \theta \dd\alpha\\ 
+&= \int P(y_1|\theta)P(y_2|\theta)P(\theta)P(\alpha) \dd \theta \dd\alpha\\
+&= \int \exp{\lbrace-\frac{1}{2}(y_1-\theta)^2\rbrace}\cdot  \exp{\lbrace-\frac{1}{2}(y_2-\theta)^2\rbrace}\cdot \frac{1}{\sqrt{\alpha}}\exp\lbrace-\frac{\theta^2}{2\alpha}\rbrace \cdot \frac{1}{\alpha}~\dd\theta \dd\alpha
+\end{split}
+\end{equation}
+Po bližším přezkoumání (2.17) zjistíme, že nelze přes $\alpha$ vyintegrovat. Proto použijeme KL-divergenci. Dle definice KL-divergence můžeme psát:
+\begin{equation}
+P(y_1,y_2)  = \int P(\theta, \alpha,y_1,y_2) \dd \theta \dd\alpha\\ 
+ \KLDeq \int_{G}q(\alpha)q(\theta)\ln{\frac{P(\theta,\alpha,y_1,y_2)}{q(\alpha)q(\theta)}} \dd\theta \dd\alpha  = \diamondsuit
+\end{equation} 
+
+kde $G = supp(q(\theta))\times supp(q(\alpha))$. Nezapomínejme, že $q(\theta)$ a $q(\alpha)$ jsou distribuce, pro které si apriori zvolíme 
+ \begin{equation*}
+\begin{split}
+q(\theta) = \mathcal{N}(\mu , \sigma) &\\
+q(\alpha) = i\Gamma(\gamma,\delta)&
+\end{split}
+\end{equation*}
+     Dle (1.2.1) navíc víme, že platí $\int_{G}q(\alpha)q(\theta) \dd\theta \dd\alpha = 1$. Výraz budeme rozepisovat pomocí pravidel pro logaritmy a postupně upravovat. 
+
+\begin{equation}
+\begin{split}
+\diamondsuit & \overset{\mathrm{2.15.}}{=} \int_{G}q(\alpha)q(\theta)\ln\frac{P(y_1|\theta)P(y_2|\theta)P(\theta)P(\alpha)}{q(\alpha)q(\theta)} \dd\theta \dd\alpha \\
+& = \int_{G} q(\theta)q(\alpha)\left(\ln{P(y_1|\theta)} + \ln{P(y_2|\theta)} + \ln{P(\theta)} + \ln{P(\alpha)} - \ln{q(\theta)} - \ln{q(\alpha)}\right) \dd \alpha \dd \theta \\&
+ \end{split}
+\end{equation}
+
+Poslední dva výrazy jsou tzv. entropie pro Gaussovo rozdělení, resp.  inverzní gamma rozdělení. Můžeme využít již známých výsledků:
+\begin{equation*}
+\begin{split}
+& \int q(\theta)\ln{q(\theta)}~\dd \theta \propto - \frac{1}{2}\ln{\sigma} \\
+& \int q(\alpha)\ln{q(\alpha)}~\dd \alpha = - \gamma - \ln{\delta \Gamma (\gamma)} + (1+\gamma)\psi (\gamma)  
+\end{split}
+\end{equation*}
+Vypočítejme zbývající výrazy, kde pro jednoduchost budeme pro střední hodnoty využívat značení pomocí špičatých závorek:
+\begin{equation*}
+\begin{split}
+ &\int_{G} q(\theta)q(\alpha)\ln{P(y_1|\theta)}~\dd \alpha~\dd \theta = \left\langle  -\frac{1}{2}(y_1 - \theta)^2\right\rangle = -\frac{1}{2}\left(y_1^2 -2y_1\mu + \mu^2 + \sigma \right) \\
+ &\int_{G} q(\theta)q(\alpha)\ln{P(y_2|\theta)}~\dd \alpha~\dd \theta = \left\langle  -\frac{1}{2}(y_2 - \theta)^2\right\rangle = -\frac{1}{2}\left(y_2^2 -2y_2\mu + \mu^2 + \sigma \right) \\
+ &\int_{G} q(\theta)q(\alpha)\ln{P(\theta)}~\dd \alpha~\dd \theta = \left\langle -\frac{\theta^2}{2\alpha} -\frac{1}{2}\ln{\alpha}  \right\rangle  = -\frac{1}{2}\left(\left(\mu^2 + \sigma  \right)\frac{\gamma}{\delta} + \ln{\delta}- \psi (\gamma) \right) \\
+ &\int_{G} q(\theta)q(\alpha)\ln{P(\alpha)}~\dd \alpha~\dd \theta = \left\langle - \ln{\alpha}\right\rangle   = \psi (\gamma) - \ln{\delta}
+\end{split}
+\end{equation*}
+Nyní máme všechny výrazy pro výpočet $P(y_1, y_2)$ numericky.
+
+\newpage  
+Pokusme se nyní využít KL - divergenci v poněkud složitějším případě. Nalezněme koeficienty polynomu pátého stupně, který nejlépe proloží dva body.\\ Uvažujme následující pravděpodobnostní model
+\begin{equation*}
+ P(\textbf{y},\theta \vert X,\alpha) = P(\textbf{y}\vert \theta ,X)P(\theta \vert \alpha)P(\alpha) = \mathcal{N}(X\theta, I)\mathcal{N}(0,\alpha^{-1}I)\Gamma(0,0)
+ \end{equation*}
+ 
+Dále k hledání minima využijme KL divergenci  a aproximační distribuce
+\begin{equation*}
+\begin{split}
+q(\theta) = \mathcal{N}(\hat{\theta} , \Sigma) &\\
+q(\alpha) = \Gamma(\gamma,\delta)&
+\end{split}
+\end{equation*}
+KL divergence je tedy tvaru
+\begin{equation*}
+\begin{split}
+KL(q\Vert p) & =  \int q(\theta)q(\alpha)\ln{\frac{q(\theta)q(\alpha)}{P(\textbf{y}\vert \theta ,X)P(\theta \vert \alpha)P(\alpha)}}\dd \alpha \dd \theta \\ &
+= \int q(\theta)q(\alpha)\left(\ln{q(\theta)} + \ln{q(\alpha)} - \ln{P(\textbf{y}\vert \theta ,X)} - \ln{P(\theta \vert \alpha)} - \ln{P(\alpha)}\right) \dd \alpha \dd \theta \\&
+\end{split}
+\end{equation*}
+Následující členy jsou opět záporně vzaté entropie jednotlivých distribucí, víme tedy že:
+\begin{equation*}
+\begin{split}
+& \int q(\theta)\ln{q(\theta)}~\dd \theta \propto - \frac{1}{2}\ln{|\Sigma|} \\
+& \int q(\alpha)\ln{q(\alpha)}~\dd \alpha = - \gamma - \ln{\delta} + \Gamma (\gamma) + (1-\gamma)\psi (\gamma)  
+\end{split}
+\end{equation*}
+Ostatní členy budeme nyní řešit zároveň: 
+
+\begin{equation*}
+\begin{split}
+\bigstar & =  \int q(\theta)q(\alpha)\left( - \ln{P(\textbf{y}\vert \theta ,X)} - \ln{P(\theta \vert \alpha)} - \ln{P(\alpha)}\right) \dd \alpha \dd \theta \\
+& = \left\langle  \frac{1}{2}\left( \left(\textbf{y} -X\theta\right)\tran \left(\textbf{y} -X\theta\right) +\alpha\theta\tran\theta - 5\ln{\alpha}\right)- \ln{\alpha}\right\rangle \\
+& = \left\langle \frac{1}{2} \left( \textbf{y}\tran\textbf{y} - \theta\tran X\tran\textbf{y} -\textbf{y}\tran X \theta + \theta\tran X\tran X\theta + \alpha\theta\tran\theta - 7\ln{\alpha}     \right)     \right\rangle \\
+& = \left\langle \frac{1}{2}\left( \textbf{y}\tran\textbf{y} - \theta\tran X\tran\textbf{y} -\textbf{y}\tran X \theta + \tr\left(\theta\tran X\tran X\theta + \alpha\theta\tran\theta \right) - 7\ln{\alpha}     \right) \right\rangle \\
+& = \left\langle \frac{1}{2}\left( \textbf{y}\tran\textbf{y} - \theta\tran X\tran\textbf{y} -\textbf{y}\tran X \theta + \tr\left( X\tran X\theta\theta\tran + \alpha\theta\theta\tran \right) -7\ln{\alpha}     \right) \right\rangle \\
+& = \left\langle \frac{1}{2}\left( \textbf{y}\tran\textbf{y} - \theta\tran X\tran\textbf{y} -\textbf{y}\tran X \theta + \tr \left( \left( X\tran X + \alpha I\right) \theta\theta\tran \right) - 7\ln{\alpha}     \right) \right\rangle 
+\end{split}
+\end{equation*}
+Po výpočtu středních hodnot dostaneme konečný výsledek, který je tvaru:
+\begin{equation*}
+\bigstar = \frac{1}{2}\left( \textbf{y}\tran\textbf{y} - \hat{\theta}\tran X\tran\textbf{y} -\textbf{y}\tran X \hat{\theta} + \tr \left( \left( X\tran X + \frac{\gamma}{\delta} I\right) \left(\hat{\theta}\hat{\theta}\tran + \Sigma\right)\right)  -7\left(\psi(\gamma) - \ln{\delta} \right)\right) 
+\end{equation*}
+Tímto máme vypočteny všechny výrazy pro optimalizaci.
+\chapter*{Závěr}
+
+\pagestyle{plain}
+
+\addcontentsline{toc}{chapter}{Záv\v{e}r}
+
+Text závěru....
+\begin{thebibliography}{1}
+\bibitem{Allen-Cahn}S. Allen, J. W. Cahn: \emph{A microscopic theory
+for antiphase boundary motion and its application to antiphase domain
+coarsening}. Acta Metall., 27:1084-1095, 1979.
+
+\bibitem{CINECA}G. Ballabio et al.: \emph{High Performance Systems
+User Guide}. High Performance Systems Department, CINECA, Bologna,
+2005. \url{www.cineca.it}
+
+\bibitem{rumpf3}J. Becker, T. Preusser, M. Rumpf: \emph{PDE methods
+in flow simulation post processing}. Computing and Visualization in
+Science, 3(3):159-167, 2000.
+\end{thebibliography}
+
+\end{document}
