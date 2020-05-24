@@ -33,7 +33,7 @@ Elogp_α(γ,δ) = digamma.(γ).-log.(δ)
 
 
 elbo2(y1,y2,μ,σ,γ,δ) = sum(Elogp_y1(y1,μ,σ) + Elogp_y2(y2,μ,σ) +
- Elogp_θ(μ,σ,γ,δ) + Elogp_α(γ,δ)) - sum(Entq_θ(σ)) - sum(Entq_α(γ,δ))
+ Elogp_θ(μ,σ,γ,δ) + Elogp_α(γ,δ) - Entq_θ(σ) - Entq_α(γ,δ))
 
 μ = [10.0];
 <<<<<<< HEAD
