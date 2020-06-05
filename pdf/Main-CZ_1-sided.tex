@@ -765,7 +765,8 @@ Vypočítejme zbývající výrazy, kde pro jednoduchost budeme pro střední ho
 Nyní máme všechny výrazy pro výpočet distribuce $q(\theta,\alpha)$ numericky a to pomocí minimalizace KL-divergence přes parametry $\mu,\sigma,\gamma,\delta$.
 
 \section{Teorie grafů}
-V této kapitole, která poslouží k popisu složitějších datových struktur, budeme potřebovat základy z teorie grafů. 
+Poslední teoretickou kapitolou bude vsuvka do toerie grafů.
+Tato kapitola poslouží k výhodnému popsání složitějších datových struktur.
 \begin{definition}{(Graf)}
 Grafem $G$ se rozumí dvojice $(V,H)$, kde $V$ je množina vrcholů grafu $G$, $H$ je množina hran tohoto grafu a tyto množiny jsou vzájemně disjunktní.
 \end{definition}
@@ -781,8 +782,7 @@ Cyklem v grafu $G$ rozumíme posloupnost vrcholů a hran $(v_0, h_1, v_1,\dots ,
 \begin{definition}{(Strom)}
 Strom je souvislý graf neobsahující cyklus.
 \end{definition}
-Primárním cílem je výhodně zadefinovat stromovou strukturu - tedy množinu datových záznamů popsaných pomocí množiny vrcholů a hran budeme rozumět stromovou strukturou dat. \\
-V podstatě si to můžeme představit opravdu jako strom - má jeden kořen, v první úrovni se dělí na $K_1$ větví, každá další větev se v druhé úrovni dělí na $K_{2_i}$ a tak dále.  My se budeme v této práci zabývat pouze kořenem a první úrovní větví. 
+Primárním cílem je výhodně zadefinovat stromovou strukturu.  Jak na tyto definice napasovat generativní model, se pokusíme osvětlit až ve třetí kapitole, toto je pouze nezbytný aparát. Nejprve je nutno generativní model zadefinovat. 
 
 
 
@@ -843,7 +843,7 @@ Tímto máme vypočteny všechny výrazy pro optimalizaci pomocí gradientní me
 \end{comment}
 
 
-\chapter{Generativní modely}
+\chapter{Generativní modely}\label{generative}
 Ve strojovém učení se setkáváme s dvěma hlavními typy modelů a to jsou generativní modely a diskriminativní modely. Jak už napovídá název této práce, budeme se zde zabývat výhradně generativními modely.
 \begin{definition}{(Generativní model)}
 Mějme nějakou množinu datových záznamů $x$, představující nezávislé proměnné a nějakou množinu $y$, jakožto závislé proměnné. Generativní model je potom takový model, který se učí sdruženou distribuci $p(x,y)$.
@@ -855,21 +855,24 @@ p(y,x) = p(y\vert x)p(x)
 \end{equation}
 Problém je tedy převeden na hledání distribucí $p(y\vert x)$ a $p(x)$. Pro ilustraci uvažujme následující množinu datových záznamů.\\
 \begin{figure}[h]
-\includegraphics[width=12cm]{Images/TITLE/salam}
+\includegraphics[width=13cm]{Images/TITLE/data}
 \centering
 \end{figure}
-\newpage
-Určit distribuci $p(x)$ není nic těžkého, jelikož jsou tato data na ose x rozděleny rovnoměrně. To můžeme určit například z histogramu x-ových souřadnic jednotlivých bodů.
-Ten vypadá následovně:\\
+
+Určit distribuci $p(x)$ není nic těžkého, jelikož jsou tato data na ose x rozděleny rovnoměrně a to přesněji na intervalu $\left(-1 , 2 \right)$. To můžeme určit například z histogramu x-ových souřadnic jednotlivých bodů. 
+\begin{equation}
+p(x) = U(-1,2)
+\end{equation}
+\\Nyní přejdeme k hledání distribuce $p\left(y\vert x \right)$. Tu můžeme určit pomocí metody nejmenších čtverců \eqref{regresethetahat}, protože víme že pro takovou distribuci platí
+\begin{equation}
+ p(y\vert x) = \mathcal{N}\left(\mathbb{X}\theta, \sigma^2 I \right)
+ \end{equation}
+kde $\sigma^2$ je rozptyl jedné složky šumu $\varepsilon_i$ a matice $\mathbb{X}$ je ve tvaru definovaném pomocí \eqref{eq:regresematrix}. Nyní máme obě složky k určení $p(y,x)$, zobrazme proto tzv. contour plot, abychom si udělali představu, jak tato distribuce vypadá. 
+
 \begin{figure}[h]
-\includegraphics[width=14cm]{Images/TITLE/p(x)}
+\includegraphics[width=13cm]{Images/TITLE/data_contour}
 \centering
-\caption{Normalizovaný histogram x-ových souřadnic a jeho distribuce $p(x)$. }
 \end{figure}
-\\Histogram je znormalizován a oranžovou čarou je zde znázorněno rovnoměrné rozdělení $p(x)=U(-1,2)$.
-\\Nyní přejdeme k hledání distribuce $p\left(y\vert x \right)$. Tu můžeme určit pomocí metody nejmenších čtverců \eqref{regresethetahat}, protože víme že pro takovou distribuci platí $p(y\vert x) = \mathcal{N}\left(X\theta, \sigma^2 I \right)$, kde $\sigma^2$ je rozptyl šumu $\varepsilon_i$.
-
-
 \section{Variační autoencoder}
 Cílem  je najít hustotu $p(x)$ vzorků $\left\lbrace x_{i} \right\rbrace^N_{i=1} $, jehož empirická hustota se dá zapsat pomocí Diracovy delta funkce
 \begin{equation}
@@ -914,7 +917,7 @@ Tuto rovnici můžeme přepsat pomocí KL-divergence
 kde pravá strana této rovnice je lower bound $\log p(x)$.
 Jestliže vybereme parametrickou formu distribuce
 \begin{equation}
-q\left(z\vert x \right) = \mathcal{N}\left(\mu_{\phi}(x), \sigma_{\phi}(x) \right)
+q\left(z\vert x \right) = \mathcal{N}\left(\mu_{\phi}(x), \sigma^2_{\phi}(x) \right)
 \end{equation}
 můžeme parametry $\theta$ a $\phi$ minimalizovat zároveň a to následovně:
 \begin{equation}
@@ -925,29 +928,41 @@ můžeme parametry $\theta$ a $\phi$ minimalizovat zároveň a to následovně:
 \end{equation}
 V metodě variačního autoencoderu jsou důležité následující dvě věci. První je trik v reparametrizaci
 \begin{equation}
-z = \mu(x) + \sigma(x)\cdot\epsilon 
+z = \mu(x) + \sigma^2(x)\odot\epsilon 
 \end{equation}
 a druhý je analytické řešení KL-diveregence dvou gaussovských distribucí
 \begin{equation}
 \begin{split}
- D_{KL}\left(q\left(z\vert x \right) \Vert p(z)\right) & = \frac{1}{2}\left[\tr(\sigma(x)) -\mu\tran(x)\mu(x) - k - \log\det \left(\sigma(x)   \right)\right] \\
- & = \frac{1}{2}\left[\sum_{l = 1}^k(\sigma(x)) -\mu\tran(x)\mu(x) - k - \sum_{l = 1}^k\log\sigma(x)   \right] \right]
- \end{split}
- \end{equation}
+ D_{KL}\left(q\left(z\vert x \right) \Vert p(z)\right) & = \frac{1}{2}\left[\tr(\sigma^2(x)) - \mu\tran(x)\mu(x) - k - \log\det \left(\sigma^2(x)   \right)\right] \\
+ & = \frac{1}{2}\left[\sum_{l = 1}^k(\sigma^2(x)) -\mu\tran(x)\mu(x) - k - \sum_{l = 1}^k\log\sigma^2(x)    \right]
+\end{split}
+\end{equation}
 Kdybychom totiž nevybrali aproximační distribuci gaussovskou, nemohli bychom tímto způsobem $\hat{\theta},\hat{\phi}$ určit. Toto řešení KL-divergence vede na konečný tvar
 \begin{equation}
-\hat{\theta},\hat{\phi} = \argmin\left[\sum_{i = 1}^n\sum_{j = 1}^p \left[ x_i - f_\theta \left(\mu(x_i) + \sigma(x_i)\cdot\epsilon_{i,j}  \right)        \right] - \frac{1}{2}\left[\sum_{l = 1}^k(\sigma_{\phi}(x_i)) -\mu_{\phi}\tran(x_i)\mu_{\phi}(x_i) - k - \sum_{l = 1}^k\log\sigma_{\phi}(x_i)   \right] \right]
+\hat{\theta},\hat{\phi} = \argmin\left[\sum_{i = 1}^n\sum_{j = 1}^p \left[ x_i - f_\theta \left(\mu(x_i) + \sigma^2(x_i)\cdot\epsilon_{i,j}  \right)        \right] - \frac{1}{2}\left[\sum_{l = 1}^k(\sigma^2_{\phi}(x_i)) -\mu_{\phi}\tran(x_i)\mu_{\phi}(x_i) - k - \sum_{l = 1}^k\log\sigma^2_{\phi}(x_i)   \right] \right]
  \end{equation}
 \subsection*{Příklad}
 
 \chapter{Stromové struktury}
+Stromovou strukturou dat rozumíme množinu datových záznamů popsaných pomocí množiny vrcholů a hran. Vrcholy dané stromové struktury představují jednotlivé body $x$ a $y$. V podstatě si to můžeme představit opravdu jako strom - má jeden kořen, v první úrovni se dělí na $k_1$ větví, každá další větev se v druhé úrovni dělí na $k_{2_i}$ a tak dále.  My se v této práci budeme zabývat pouze kořenem a první úrovní větví. Ilustrujeme to na jednoduchém příkladu.
 \subsection*{Příklad}
+Předpokládejme takový model který ke každému $y_i$, $i \in \hat{n}$ přiřazuje určitý počet $x_{j}^{(k)}$, přičemž celkový počet $x_{j}$ je $j \in \hat{m}$, $m>n$. Tento počet může být generován například Poissonovým rozdělením s danou střední hodnotou $\lambda$, navíc celkový součet těchto počtů musí být $m$.  Jednotlivá $y_i$ potom můžou být určena nějakou kvadratickou závislostí na průměrech k nim přiřazených $x_{j}^{k}$. Všechna $x_j$ jsou přitom generována pomocí uniformního rozdělení. Pokusme se nalézt sdruženou distribuci $p(y, \bar{x})$, kde $\bar{x}_j$ značí výběrový průměr $x_j$ . Použijeme opět součinové pravidlo 
+\begin{equation}
+p(y,\bar{x}_j) = p(y\vert \bar{x}_j)p(\bar{x}_j)
+\end{equation}
+a pokusme se nalézt tyto dvě distribuce. Tento postup je nám známý už z kapitoly \eqref{generative}. Pro určení podmíněné distribuce $p\left(y \vert \bar{x}_j\right)$ použijeme opět metodu nejmenších čtverců a dostaneme 
+\begin{equation}
+p\left(y \vert \bar{x}\right) = \mathcal{N}\left(\mathbb{X}\theta, \sigma^2 I \right)
+\end{equation}
+Ovšem zde jsou prvky matice $\mathbb{X}$ jednotlivé průměry $\bar{x}_i$. Určit distribuci $p(\bar{x}_j)$ lze určit obdobně pomocí histogramu. Navíc víme-li, že se jedná o výběrové průměry, je z centrální limitní věty jasné, že se bude jednat o normální rozdělení. 
+\begin{equation}
+p(\bar{x}_j) = \mathcal{N}\left(\frac{1}{j}\sum_{j = 1}^m\bar{x}_{j}, std(\bar{x}_j) \right)
+\end{equation}
+Pro vizualizaci sdružené distribuce $p(y, \bar{x}_j)$ využijeme opět contour plot.
 \begin{figure}[h]
-\includegraphics[width=14cm]{Images/TITLE/masina}
+\includegraphics[width=13cm]{Images/TITLE/stromy_joint_distribution_priklad}
 \centering
-\caption{Normalizovaný histogram x-ových souřadnic a jeho distribuce $p(x)$. }
 \end{figure}
-
 \chapter*{Závěr}
 
 \pagestyle{plain}
