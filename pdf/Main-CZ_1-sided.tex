@@ -1,4 +1,4 @@
-%% LyX 2.3.4.2 created this file.  For more info, see http://www.lyx.org/.
+   %% LyX 2.3.4.2 created this file.  For more info, see http://www.lyx.org/.
 %% Do not edit unless you really know what you are doing.
 \documentclass[11pt,oneside,american,czech]{book}
 \usepackage[T1]{fontenc}
@@ -16,6 +16,7 @@
 \usepackage{hyperref}
 \usepackage{libertine}
 \usepackage{comment}
+\usepackage{calrsfs}
 \makeatletter
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%% Textclass specific LaTeX commands.
 \newenvironment{lyxlist}[1]
@@ -99,6 +100,7 @@
 \newcommand*{\hermconj}{^{\mathsf{H}}}
 \DeclareMathOperator{\tr}{tr}
 \DeclareMathOperator*{\argmin}{arg\,min} 
+\DeclareMathAlphabet{\pazocal}{OMS}{zplm}{m}{n}
 % Jednotky
 \newcommand{\unit}[1]{\,\mathrm{#1}} %jednotky zadávejte pomocí tohoto příkazu
 \renewcommand{\deg}{\ensuremath{\mathring{\;}}} %symbol stupně
@@ -111,6 +113,10 @@
 \newcommand{\tabh}[2]{\ensuremath{#1\,[\mathrm{#2}]}} 
 % Replace standard \cite by the parenthetical variant \citep
 %\renewcommand{\cite}{\citep}
+\newcommand{\diag}{\mathop{\mathrm{diag}}}
+\def\Var{{\textrm{Var}}\,}
+
+
 
 \makeatother
 
@@ -328,6 +334,7 @@ by commas
 
 
 
+\chapter*{Úvod}
 
 \chapter{Teorie}
 \section{Optimalizace}
@@ -349,13 +356,13 @@ Použijeme bod $\theta_0$ funkce $L(\theta)$ jako výchozí bod, ze kterého se 
 \subsection*{ADAM}
 Předchozí metoda není při větším množství dat tak rychlá, jak bychom pro výpočet minima ztrátové funkce potřebovali. Používáme proto adaptivní iterační gradientní metodu ADAM (Adaptive Moment Estimation), která navíc používá druhý moment gradientu. Zatímco Gradient descent má krok stále stejný, u metody ADAM je krok $h$ adaptivní. Popřípadě můžeme ladit i zapomínací koeficienty, což už je ale mimo rámec této práce a my nebudeme při výpočtech využívat.
 \pagestyle{headings}
-\subsection{Metoda nejmenších čtverců}
+\subsection{Metoda nejmenších čtverců}\label{least_squares}
  Předpokládejme že máme množinu $x = \left \lbrace x_{i}\right\rbrace_{i = 1}^{n} $ ke každému $x_i$ máme právě jedno pozorování $y_i$, komplexně zapsáno zobrazením jako $(x_1,\dots, x_n)~\longmapsto~(y_1,\dots, y_n)$.
 Naším cílem je najít nejlepší proložení dat, čili fit, pomocí polynomické funkce řádu $p\leq n$ ve tvaru
-\begin{equation*}
+\begin{equation}\label{linear_combination}
 \hat{y}(x, \theta) = \theta_0 + \theta_1x + \theta_2x^2 + \dots + \theta_px^p = \sum_{i = 0}^{p} {\theta_{i}x^{i}},
-\end{equation*}
-která je lineární v neznámých parametrech $\theta = \left( \theta_0, \theta_1,\dots, \theta_p\right)$. Takové modely nazýváme lineární a jejich vlastnosti budeme nadále využívat.\\
+\end{equation}
+která je lineární v neznámých parametrech $\theta = \left( \theta_0, \theta_1,\dots, \theta_p\right)$. Takové modely nazýváme lineární a jednoduše je nazýváme lineární regresí. Jelikož se jedná o tak jednoduché modely, jejich míra využití je značně omezena. O tom jak tyto modely vylepšit, se dozvíme v kapitole \eqref{generative}. \\
 Abychom našli ten nejlepší možný fit, je nutno minimalizovat ztrátovou funkci $L(\theta)$:  
 \begin{equation}\label{eq:loss}
 L(\theta) =\sum_{i = 1}^{n}\left[ \hat{y}(x_i, \theta) - y_i\right]^2 = \left( \mathbb{X}\cdot\theta - y \right)\tran\left(  \mathbb{X}\cdot\theta - y \right)
@@ -418,11 +425,11 @@ Naším cílem je získání parametrů $\theta$. Jelikož je $y - \hat{y}= \eps
 \end{equation}
  a obě strany rovnice vynásobíme zleva $ \mathbb{X}\tran$. Tím nám rovnice přejde do tvaru
 \begin{equation*}
-\mathbb{X}\tran\cdot y = \mathbb{X}\tran\cdot \mathbb{X} \cdot {\theta}
+\mathbb{X}\tran\cdot \hat{y} = \mathbb{X}\tran\cdot \mathbb{X} \cdot {\theta}
 \end{equation*}
 Teď už stačí rovnici zleva vynásobit inverzní maticí $(\mathbb{X}\tran\cdot \mathbb{X})^{-1}$. Dostaneme tak konečné řešení
 \begin{equation}\label{regresethetahat}
-\hat{\theta} = (\mathbb{X}\tran \mathbb{X})^{-1}\mathbb{X}\tran y
+\hat{\theta} = (\mathbb{X}\tran \mathbb{X})^{-1}\mathbb{X}\tran \hat{y}
 \end{equation}
 Tento postup zahrnuje i lineární regresi pro hodnotu $p = 1$.
 
@@ -430,15 +437,16 @@ Tento postup zahrnuje i lineární regresi pro hodnotu $p = 1$.
 
 \section{Úvod do pravděpodobnosti a Bayesovská statistika}
 \subsection{Pravděpodobnostní míra}
-\begin{definition}{(Kolmogorova definice pravděpodobnosti).} 
+\begin{definition}[Kolmogorova definice pravděpodobnosti]
 Mějme množinu $\Omega$ vybavenou $\sigma$-algebrou $\mathcal{A}$, tedy souborem podmnožin obsahujícím $\Omega$ a uzavřeným na doplňky a spočetná sjednocení. Pak libovolnou funkci $P : \mathcal{A} \to \mathbb{R}$ , která splňuje :
 \begin{enumerate}
 \item $(\forall A\in \mathcal{A})(P(A) \geq 0).$
 \item$ P(\Omega) = 1 $
 \item $\forall A_j $ disjunktní platí $P(\sum_{j=1}^{\infty}A_j) = \sum_{j=1}^{\infty}P(A_j)$
 \end{enumerate}
+nazýváme pravděpodobnostní mírou.
 \end{definition}
-\begin{vet}{(Vlastnosti P).} Mějme pravděpodobnostní prostor $(\Omega,\mathcal{A}, P)$ a něcht $(\forall j \in \mathbb{N})(A_j \in \mathcal{A})$ a $B \in \mathcal{A}$. Pak platí:
+\begin{vet}[Vlastnosti $P$] Mějme pravděpodobnostní prostor $(\Omega,\mathcal{A}, P)$ a nechť $(\forall j \in \mathbb{N})(A_j \in \mathcal{A})$ a $B \in \mathcal{A}$. Pak platí:
 \begin{enumerate}
 
 
@@ -450,85 +458,114 @@ Mějme množinu $\Omega$ vybavenou $\sigma$-algebrou $\mathcal{A}$, tedy soubore
 \item Komplementarita: $A \in \mathcal{A} \Rightarrow P(A^C) = 1 - P(A)$
 \end{enumerate}
 \end{vet}
-\begin{definition}{(Podmíněná pravděpodobnost).} Nechť $A,B \in \mathcal{A}$ a $P(B)>0$. Pak definujeme podmíněnou pravděpodobnost:
+\begin{definition}[Podmíněná pravděpodobnost] Nechť $A,B \in \mathcal{A}$ a $P(B)>0$. Pak definujeme podmíněnou pravděpodobnost:
 \begin{equation}\label{podminenapravdepodobnost}
 P(A|B) = \frac{P(A,B)}{P(B)}
 \end{equation}
 
 \end{definition}
-\begin{vet}{(Součinové pravidlo).}
+\begin{vet}[Součinové pravidlo]
 Nechť $A_1,\ldots,A_n \in \mathcal{A} $ a dále nechť také $P(A_1,\ldots,A_n ) > 0$. Potom platí:
 \begin{equation}\label{chainrule}
 P(A_1,\ldots,A_n) = P(A_1)\cdot P(A_2|A_1) \cdot P(A_3| A_2, A_1)\cdot \ldots \cdot P(A_n|A_1,\ldots,A_{n-1})
 \end{equation}
 \end{vet}
-\begin{vet}{(Bayseova věta).} Nechť $A \in \mathcal{A} $ a $P(B) \neq 0$. Potom platí:
+\begin{vet}[Bayesova věta] Nechť $A \in \mathcal{A} $ a $P(B) \neq 0$. Potom platí:
 \begin{equation}\label{Bayes}
 P(A|B) = \frac{P(B\vert A)P(A)}{P(B)}
 \end{equation}
 \end{vet}
-\begin{poz}
 $P(A)$ nazýváme prior a $P(A|B)$ nazýváme posterior.
-\end{poz}
-\begin{vet}{(Nezávislost jevů).} Nechť $A_j \in \mathcal{A} (\forall j \in \mathbb{N})$. Potom jevy nazveme nezávislé právě tehdy když platí podmínka
+
+\begin{vet}[Nezávislost jevů] Nechť $A_j \in \mathcal{A} (\forall j \in \mathbb{N})$. Potom jevy nazveme nezávislé právě tehdy když platí podmínka
 \begin{equation}
 P(A_1,\ldots,A_k) = \prod_{i=1}^{k} P(A_i)
 \end{equation}
 \end{vet}
 
 \subsection{Hustoty pravděpodobnosti}
-Primárním cílem generativního modelování je hledání distribuce nebo-li hustoty pravděpodobnosti daných dat. Výhodou je, že pro hustotu pravděpodobnosti můžeme využívat stejně pravidlo podmíněnosti \eqref{podminenapravdepodobnost}, součinové pravidlo \eqref{chainrule} a Bayeseovo pravidlo \eqref{Bayes}. Toto se pro nás ukáže jako naprosto klíčové. Budeme uvažovat pouze spojitá rozdělení pravděpodobnosti náhodné veličiny $X$.
-\begin{definition}{(Náhodná veličina)}
-Máme prostor $\left(\Omega,\mathcal{A} \right)$, potom funkci $X:(\Omega,\mathcal{A})\rightarrow \left(\R^n,\mathcal{B}_n \right)$, kde $\mathcal{B}_n $ značí borelovskou $\sigma$-algrebru v $\R^n$, nazveme náhodnou veličinou.
+Primárním cílem generativního modelování je hledání distribuce nebo-li hustoty pravděpodobnosti daných dat. Výhodou je, že pro hustotu pravděpodobnosti můžeme využívat stejně pravidlo podmíněnosti \eqref{podminenapravdepodobnost}, součinové pravidlo \eqref{chainrule} a Bayeseovo pravidlo \eqref{Bayes}. Toto se pro nás ukáže jako naprosto klíčové. 
+\begin{definition}[Náhodná veličina]
+Máme prostor $\left(\Omega,\mathcal{A} \right)$, potom funkci $\textbf{X} = \left(X_1,\dots,X_n \right):(\Omega,\mathcal{A})\rightarrow \left(\R^n,\mathcal{B}_n \right)$, kde $\mathcal{B}_n $ značí borelovskou $\sigma$-algrebru v $\R^n$, nazveme náhodnou veličinou.
 \end{definition}
-\begin{definition}{(Hustota pravděpodobnosti).}\label{hustota}
-Hustotou pravděpodobnosti náhodné veličiny $X$ rozumíme spojitou funkci $p_X(x)$, která splňuje  následující dvě podmínky:
+\begin{definition}[Hustota pravděpodobnosti]
+\label{hustota}
+Hustotou pravděpodobnosti náhodné veličiny $\textbf{X}$ rozumíme spojitou funkci $p_{\textbf{X}}\left(\textbf{x}\right)$, která splňuje následující dvě podmínky:
 \begin{enumerate}
-\item  $p_X(x) \geq 0$
-\item $\int_\Omega p_X(x) \dd x= 1$
+\item $\forall \textbf{x}$, $p_{\textbf{X}}\left(\textbf{x}\right) \geq 0$
+\item $\int_{\R^n} p_{\textbf{X}}\left(\textbf{x}\right) \dd \textbf{x} = 1$
+\end{enumerate}
+Obdobou hustoty pravděpodobnosti pro diskrétní náhodnou veličinu je $\textbf{pravděpodobnostní funkce}$ $ P\left[\textbf{X} = \textbf{x}\right]$ splňující:
+\begin{enumerate}
+\item $\forall \textbf{x}$, $ P\left[\textbf{X} = \textbf{x}\right] \geq 0 $
+\item $\sum_{\textbf{x}} P\left[\textbf{X} = \textbf{x}\right] = 1$
 \end{enumerate}
 \end{definition}
-Náhodná veličina $X$ stejně tak i hustota $p_X(x)$ může být vícerozměrná. Index budeme vynechávat, protože bude jasné, ke které náhodné veličině hustota patří. Podívejme se nyní, jak určit hustotu transformované veličiny.
+My se většinou omezíme na jednorozměrné a spojité náhodné veličiny.   V takovém případě budeme psát $X$ a $p_X(x)$. Index budeme vynechávat, protože bude jasné, ke které náhodné veličině hustota patří. Podívejme se nyní, jak určit hustotu transformované náhodné  veličiny.
 
-\begin{vet}{(Transformace náhodné veličiny)}
-Nechť $X \sim p_X(x)$ a nechť $h:\R^n \rightarrow \R^n$ je regulární a prosté zobrazení na množině $H$, takové že $\int_H p_X(x) \dd x= 1$. Potom je $Y =h(X)$ náhodná veličina a její hustota $\forall y \in h(H)$ má následující tvar:
+\begin{vet}[Transformace náhodné veličiny]
+Nechť $\textbf{X} \sim p_{\textbf{X}}\left(\textbf{x}\right)$ a nechť $h:\R^n \rightarrow \R^n$ je regulární a prosté zobrazení na množině $H$, takové že $\int_H p_{\textbf{X}}\left(\textbf{x}\right) \dd \textbf{x} = 1$. Potom je $\textbf{Y} =h(\textbf{X})$ náhodná veličina a její hustota $\forall \textbf{y} \in h(H)$ má následující tvar:
 \begin{equation}\label{transformace}
-p_Y(y) = p_X\left(g^{-1}(y)\right)\mid \det \mathbb{J}_{g^{-1}}(y) \mid
+p_{\textbf{Y}}\left(\textbf{y}\right) = p_{\textbf{X}}\left(g^{-1}\left(\textbf{y}\right)\right)\mid \det \mathbb{J}_{g^{-1}}\left(\textbf{y}\right) \mid
 \end{equation}
 \end{vet}
 
-Nyní ukážeme jak určit ty nejdůležitější charakteristiky náhodné veličiny.
-\begin{definition}{(Střední hodnota náhodné veličiny)}
-Má-li náhodná veličina $X$ spojitou hustotu pravděpodobnosti $p(x)$, definujeme její střední (očekávanou) hodnotu  $\mathbb{E}\left[X\right]$, alternativně značeno $\langle X\rangle$, vztahem
+Nyní ukážeme, jak určit ty pro nás nejdůležitější charakteristiky náhodné veličiny. Bude se jednat o střední hodnotu, rozptyl a entropii.
+\begin{definition}[Střední hodnota náhodné veličiny]
+Má-li náhodná veličina $\textbf{X}$ $\in \mathcal{L}_1$ spojitou hustotu pravděpodobnosti $p\left(\textbf{x}\right)$, definujeme její střední (očekávanou) hodnotu  $\mathbb{E}\left[\textbf{X}\right]$, alternativně značeno $\langle \textbf{X}\rangle$, vztahem
 \begin{equation}
-\mathbb{E}\left[X\right] = \int_\Omega xp(x) \dd x
+\mathbb{E}\left[\textbf{X}\right] = \int_\Omega \textbf{X} \dd P = \int_{\R^n} \textbf{x} p(\textbf{x}) \dd x 
+\end{equation}
+Pro diskrétní náhodnou veličinu s pravděpodobnostní funkcí  $P\left[\textbf{X} = \textbf{x}\right]$
+\begin{equation}
+\mathbb{E}\left[\textbf{X}\right] = \sum_k \textbf{x}_k \cdot P\left[\textbf{X} = \textbf{x}_k\right]
 \end{equation}
 \end{definition}
-\begin{definition}{(Rozptyl náhodné veličiny)}
-Má-li náhodná veličina $X$ spojitou hustotu pravděpodobnosti $p(x)$, definujeme rozptyl (varianci)  $\mathbb{D}\left[X\right]$, alternativně značeno $var(X)$, vztahem
+\begin{definition}[Rozptyl náhodné veličiny]
+Má-li náhodná veličina $X$ $\in \mathcal{L}_2$ spojitou hustotu pravděpodobnosti $p(x)$, definujeme rozptyl (varianci)  $\mathbb{D}\left[X\right]$, alternativně značeno $\Var (X)$, vztahem
 \begin{equation}
-\mathbb{D}\left[X\right] = \int_\Omega x^2p(x) \dd x = \int_\Omega \left(x - \mathbb{E}\left[X\right]\right)^2 \dd x
+\mathbb{D}\left[X\right] = \mathbb{E}\left[X - \mathbb{E}\left[X\right]\right]^2 = \mathbb{E}\left[X^2\right] - \mathbb{E}\left[X\right]^2
+\end{equation}
+Pro vícerozměrnou náhodnou veličinu $\textbf{X}$ $\in \mathcal{L}_2$ je variance $n\times n$ rozměrná matice a nazýváme ji kovarianční.  Je definována vztahem
+\begin{equation}
+\mathbb{D}\left[\textbf{X}\right] = \mathbb{E} \left[          \left( X - \mathbb{E}\left[X\right] \right)  \left(X - \mathbb{E}\left[X\right]\right)\tran   
+ \right]
 \end{equation}
 \end{definition}
-\begin{definition}{(Entropie)}
-Má-li náhodná veličina $X$ spojitou hustotu pravděpodobnosti $p(x)$, definujeme entropii náhodné veličiny  $\mathbb{H}\left[X\right]$ vztahem
+\begin{definition}[Entropie]
+Má-li náhodná veličina $\textbf{X}$ $\in \mathcal{L}_1$ spojitou hustotu pravděpodobnosti $p\left(\textbf{x}\right)$, definujeme entropii náhodné veličiny  $\mathbb{H}\left[\textbf{X}\right]$, vztahem
 \begin{equation}
-\mathbb{H}\left[X\right] = - \int_\Omega p(x) \ln p(x) \dd x
+\mathbb{H}\left[\textbf{X}\right] = \mathbb{E}\left[-\log p\left(\textbf{x}\right)\right]
+\end{equation}
+kde $\log$ značí přirozený logaritmus. Stejně jako pro střední hodnotu, můžeme entropii definovat pro diskrétní náhodnou veličinu 
+\begin{equation}
+\mathbb{H}\left[\textbf{X}\right] = -\sum _k P\left[\textbf{X} = \textbf{x}_k\right] \cdot \log P\left[\textbf{X} = \textbf{x}_k\right]
 \end{equation}
 \end{definition}
 
 
 \begin{poz}
-Kvůli zjednodušení zápisu nebudeme později uvádět integrační množinu, automaticky tak budeme předpokládat,že se integruje přes celý nosič hustoty. 
+Kvůli zjednodušení zápisu nebudeme později uvádět integrační množinu - automaticky tak budeme předpokládat, že se integruje přes celý nosič hustoty. 
 \end{poz}
 
-V dalším textu uvedeme jednotlivá rozdělení a pro přehlednost jejich výše zmíněné charakteristiky, jelikož je této práci budeme využívat.  
+V dalším textu uvedeme příklady spojitých či diskrétních rozdělení a pro přehlednost jejich výše zmíněné charakteristiky, jelikož je této práci budeme využívat.  
+
+\subsubsection{Poissonovo rozdělení}
+Poissonovo rozdělení popisuje diskrétní náhodnou veličinu. Většinou se jedná o počet výskytu určitého jevu v daném intervalu. Důležité je, že tyto jevy  nastávají nezávisle na sobě. Pravděpodobnostní funkci Poissonova rozdělení vyjadřujeme pomocí parametru $\lambda$ ve tvaru
+\begin{equation}
+\mathrm{Po}(\lambda) = \frac{\lambda^k}{k!}\ee^{-\lambda}
+\end{equation}
+\begin{itemize}
+\item $\mathbb{E}\left[X\right] = \lambda$
+\item  $\mathbb{D}\left[X\right] = \lambda$
+\item $\mathbb{H}\left[X\right] = \lambda\left( 1 - \log \left( \lambda\right)\right) + \ee^{-\lambda} \sum_{k = 0}^{\infty}\frac{\lambda^k \log\left(k! \right)}{k!} $
+\end{itemize}
 
 \subsubsection{Rovnoměrné rozdělení}
-Začněme jedním z nejjednodušších rozdělení. Rovnoměrné rozdělení, někdy také uniformní, přiřazuje všem hodnotám stejnou pravděpodobnost.
-Je definováno na intervalu $\left( a,b \right)$ a můžeme ji vyjádřit následujícím způsobem.
+Jedním z nejjednodušších rozdělení pro spojité proměnné. Rovnoměrné rozdělení, někdy také nazýváno uniformní, přiřazuje všem hodnotám stejnou pravděpodobnost.
+Je definováno na intervalu $\left( a,b \right)$ a můžeme ho vyjádřit následujícím způsobem.
  \begin{equation}
-    U(a,b) =
+    \mathrm{U}(a,b) =
     \begin{cases}
       \frac{1}{b-a}, & \text{pro}\ x \in (a,b) \\
       0, & \text{jinak}
@@ -538,51 +575,53 @@ Je definováno na intervalu $\left( a,b \right)$ a můžeme ji vyjádřit násle
 \begin{itemize}
 \item $\mathbb{E}\left[X\right] = \frac{1}{2}\left(a+b\right)$
 \item  $\mathbb{D}\left[X\right] = \frac{1}{12}\left(b-a\right)^2$
-\item $\mathbb{H}\left[X\right] = \ln{\left(b-a\right)}$
+\item $\mathbb{H}\left[X\right] = \log {\left(b-a\right)}$
 \end{itemize}
 
 \subsubsection{Normální rozdělení}
 Nejdůležitější hustota pravděpodobnosti pro spojité proměnné se nazývá normální nebo také Gaussovo rozdělení. Jeho hustota je definována $\forall x \inR $ pomocí dvou parametrů $\mu \in \R$ a $\sigma^2 > 0$ jako
 \begin{equation}
-\mathcal{N}(\mu,\sigma^2) = \frac{1}{\sqrt{2\pi\sigma^2}}\exp\left\lbrace {-\frac{(x-\mu)^2}{2\sigma^2}}\right\rbrace 
+\pazocal{N}(\mu,\sigma^2) = \frac{1}{\sqrt{2\pi\sigma^2}}\exp\left\lbrace {-\frac{(x-\mu)^2}{2\sigma^2}}\right\rbrace 
 \end{equation} 
 
 \begin{itemize}
 \item $\mathbb{E}\left[X\right] = \mu$
 \item  $\mathbb{D}\left[X\right] = \sigma^2$
-\item $\mathbb{H}\left[X\right] = \frac{1}{2}\ln2\pi\ee\sigma^2$
+\item $\mathbb{H}\left[X\right] = \frac{1}{2}\log\left( 2\pi\ee\sigma^2\right)$
 \end{itemize}
- Budeme využívat i d-rozměrnou variantu Gaussova rozdělení, které je definováno vztahem
+ Budeme využívat i n-rozměrnou variantu Gaussova rozdělení, které je definováno vztahem
 \begin{equation}
-\mathcal{N}(\mu,\Sigma) = \frac{1}{\sqrt{(2\pi)^d \lvert \Sigma \rvert}}\exp\left\lbrace{-\frac{1}{2}(\textbf{x}-\boldsymbol{\mu})^{T}\Sigma^{-1}(\textbf{x}-\boldsymbol{\mu})}\right\rbrace,
+\pazocal{N}(\mu,\Sigma) = \frac{1}{\sqrt{(2\pi)^d \lvert \Sigma \rvert}}\exp\left\lbrace{-\frac{1}{2}(\textbf{x}-\boldsymbol{\mu})^{T}\Sigma^{-1}(\textbf{x}-\boldsymbol{\mu})}\right\rbrace,
 \end{equation}
-kde $\Sigma$ je d$\times$d matice, kterou nazveme kovarianční a $\boldsymbol{\mu}$ je vektor středních hodnot.
+kde $\Sigma$ je kovarianční matice a $\boldsymbol{\mu}$ je vektor středních hodnot.
 \begin{itemize}
 \item $\mathbb{E}\left[X\right] = \boldsymbol{\mu}$
 \item  $\mathbb{D}\left[X\right] = \Sigma$
-\item $\mathbb{H}\left[X\right] = \frac{1}{2}\ln \det \left(2\pi\ee\Sigma\right)$
+\item $\mathbb{H}\left[X\right] = \frac{1}{2}\log \det \left(2\pi\ee\Sigma\right)$
 \end{itemize}
 \subsubsection{Gamma rozdělení}
 Gamma rozdělení je definováno stejně jako normální rozdělení pomocí dvou parametrů $\alpha > 0$ a $\beta > 0$. Jeho hustota pravděpodobnosti má smysl pro $\forall x > 0$ a můžeme ji najít v několika možných tvarech. My uvedeme tento:
 \begin{equation}
-\Gamma(\alpha,\beta) = \frac{\beta^{\alpha}}{\Gamma (\alpha)}x^{\alpha -1}\exp\left\lbrace {-\beta x}\right\rbrace 
+\mathrm{Gamma}(\alpha,\beta) = \frac{\beta^{\alpha}}{\Gamma (\alpha)}x^{\alpha -1}\exp\left\lbrace {-\beta x}\right\rbrace 
 \end{equation} 
-Stejně jako u Gaussova rozdělení uvedeme některé důležité charakteristiky.
+kde $\Gamma(\alpha)$ značí gamma funkci. Stejně jako u předchozích rozdělení uvedeme některé důležité charakteristiky.
 \begin{itemize}
 \item $\mathbb{E}\left[X\right] = \frac{\alpha}{\beta} $
 \item  $\mathbb{D}\left[X\right] = \frac{\alpha}{\beta^2} $
-\item $\mathbb{H}\left[X\right] = \alpha - \ln\beta + \ln \Gamma(\alpha) + (1-\alpha)\psi(\alpha)$
+\item $\mathbb{H}\left[X\right] = \alpha - \log \beta + \log \Gamma(\alpha) + (1-\alpha)\psi(\alpha)$
 \end{itemize}
+Přičemž funkce $\psi(\alpha)$ značí digamma funkci, čili $\psi(\alpha) = \frac{\Gamma'(\alpha)}{\Gamma(\alpha)}$ 
+
 \subsubsection{Inverzní gamma rozdělení}
-Inverzní gamma rozdělení je gamma rozdělení akorát pro převrácenou hodnotu $x$, je tedy opět popsáno dvěma parametry $\alpha > 0$ a $\beta > 0$ a definováno pro $\forall x > 0$. Jeho hustotu můžeme zapsat následovně:
+Inverzní gamma rozdělení je  velmi podobné gamma rozdělení akorát pro převrácenou hodnotu $x$, je tedy opět popsáno dvěma parametry $\alpha > 0$ a $\beta > 0$ a definováno pro $\forall x > 0$. Jeho hustotu můžeme zapsat následovně:
 \begin{equation}
-i\Gamma(\alpha,\beta) = \frac{\beta^{\alpha}}{\Gamma (\alpha)}x^{-\alpha -1}\exp\left\lbrace{-\frac{\beta}{ x}}\right\rbrace 
+\mathrm{invGamma}(\alpha,\beta) = \frac{\beta^{\alpha}}{\Gamma (\alpha)}x^{-\alpha -1}\exp\left\lbrace{-\frac{\beta}{ x}}\right\rbrace 
 \end{equation} 
-Střední hodnota a rozptyl i$\Gamma(\alpha,\beta)$ nejsou ale definována pro $\alpha > 0$, platí:
+Střední hodnota a rozptyl $\mathrm{invGamma}(\alpha,\beta)$ nejsou ale definována pro $\alpha > 0$, platí:
 \begin{itemize}
 \item $\mathbb{E}\left[X\right] = \frac{\beta}{\alpha - 1} $, pro  $\alpha > 1$
 \item  $\mathbb{D}\left[X\right] =  \frac{\beta^2}{(\alpha -1)^2(\alpha - 2)^2}$, pro $\alpha > 2$
-\item $\mathbb{H}\left[X\right] =\alpha + \ln\beta + \ln \Gamma(\alpha) - (1+\alpha)\psi(\alpha)$
+\item $\mathbb{H}\left[X\right] =\alpha + \log\beta + \log \Gamma(\alpha) - (1+\alpha)\psi(\alpha)$
 \end{itemize}
 
 \clearpage
@@ -596,7 +635,7 @@ jednoduchou úpravou dostaneme
 \begin{equation}\label{eq:bayeslinearregression}
 \epsilon = y -  \mathbb{X} \cdot {\theta}
 \end{equation}
-Jelikož je pro jednu složku šumu platí $\varepsilon_i \sim \mathcal{N}\left(0,1\right)$ a jsou iid, pro hustotu celého vektoru $\epsilon$ platí
+Jelikož je pro jednu složku šumu platí $\varepsilon_i \sim \pazocal{N}\left(0,1\right)$ a jsou iid, pro hustotu celého vektoru $\epsilon$ platí
 \begin{equation}
 p(\epsilon) \propto \exp\left\lbrace -\frac{1}{2}\epsilon\tran\epsilon \right\rbrace 
 \end{equation}
@@ -615,7 +654,7 @@ p(\theta\vert y,\mathbb{X}) = \frac{p(y\vert\mathbb{X},\theta)p(\theta|\mathbb{X
 K tomu abychom mohli pokračovat ve výpočtu $p(\theta|y,\mathbb{X})$, potřebujeme určit $p(\theta|\mathbb{X})$. Jelikož je $\theta$ nezávislé na $\mathbb{X}$, můžeme psát pouze $p(\theta)$.\\
 Pro hustotu $p(\theta)$ předpokládáme následující vztah:
 \begin{equation}
- p(\theta) = \mathcal{N}\left( 0,\alpha^{-1}\mathbb{I}\right)  \propto \exp\left\lbrace -\frac{1}{2}\theta\tran\theta\alpha\right\rbrace 
+ p(\theta) = \pazocal{N}\left( 0,\alpha^{-1}\mathbb{I}\right)  \propto \exp\left\lbrace -\frac{1}{2}\theta\tran\theta\alpha\right\rbrace 
 \end{equation}
 Nyní můžeme pokračovat dosazením do \eqref{rovniceupravapomocobayese}
 \begin{equation}\label{eq:upravybayes}
@@ -652,7 +691,7 @@ Nyní z této rovnice jednoduchou úpravou a dosazením za $\Sigma$ dostaneme da
 
 
 \subsection{Divergence}
-Divergence  je funkce $D(.\Vert.)$ : $S\times S$ $\to$ $\mathcal{R}$, kde je $S$ je prostor pravděpodobnostních rozdělení a které splňuje následující dvě podmínky:
+Divergence  je funkce $D(.\Vert.)$ : $S\times S$ $\to$ $\R$, kde je $S$ je prostor pravděpodobnostních rozdělení a které splňuje následující dvě podmínky:
 \begin{enumerate}
 \item  $D(q\Vert p) \geq 0$
 \item  $D(q\Vert p) = 0$ pro $p=q$
@@ -663,14 +702,14 @@ Nejdůležitější skupinou divergencí jsou takzvané f-divergence. Jsou defin
 \begin{equation}
  D_f(q\Vert p) = \int q(x)f{\left(\frac{q(x)}{p(x)}\right)}       \dd x
 \end{equation}
-kde $supp(q)$ značí nosič funkce $q(x)$.
+
 \subsubsection*{Kullback-Leiblerova divergence}
-Pro nás bude užitečná tzv. Kullback-Leiblerova divergence, kde za funkci $f$ bereme přirozený logaritmus, značeno $\log$. To je rozhodně konvexní funkce pro kterou platí $\log{1} = 0$. Tvar KL-divergence je následující:
+Pro nás bude užitečná tzv. Kullback-Leiblerova divergence, kde za funkci $f$ bereme přirozený logaritmus. To je rozhodně konvexní funkce, pro kterou platí podmínka $\log{1} = 0$. Tvar KL-divergence je následující:
 \begin{equation}\label{KLdivergence}
  D_{KL}(q\Vert p) = \int q(x)\log{\frac{q(x)}{p(x)}}       \dd x
 \end{equation}
 \subsection{ELBO}
-Předpokládejme že máme pozorování $x$ a $z$ jsou skryté (latentní) proměnné. Toto je zcela obecná definice a $z$ může obsahovat i parametry. Posteriorní distribuci latentní proměnné $Z$ můžeme napsat pomocí Bayesova pravidla \eqref{Bayes}, jehož jmenovatel se někdy také nazývá evidence,  takto:
+Předpokládejme že máme pozorování $x$ a $z$ jsou skryté (latentní) proměnné. Toto je zcela obecná definice a $z$ může obsahovat i parametry. Posteriorní distribuci latentní proměnné $z$ můžeme napsat pomocí Bayesova pravidla \eqref{Bayes}, jehož jmenovatel se někdy také nazývá evidence,  takto:
 \begin{equation}
 p(z\vert x) =\frac{p(x\vert z)p(z)}{p(x)}= \frac{p(x\vert z)p(z)}{\int p(x,z) \dd z}
 \end{equation}
@@ -684,11 +723,11 @@ a abychom mohli pokračovat, využijeme pomocnou funkci $q(z\vert \theta)$
 \end{equation}
 Dále využijeme Jensenovu nerovnost, díky které získáme spodní hranici (lower bound), odtud Evidence Lower Bound, čili ELBO.
 \begin{equation}
-\log\mathbb{E}_q\left[\frac{p(x,z)}{q\left(z\vert w \right)}\right] \geq \mathbb{E}_q\left[\log\frac{p(x,z)}{q\left(z\vert w \right)}\right] = \mathcal{L}\left(w \right)
+\log\mathbb{E}_q\left[\frac{p(x,z)}{q\left(z\vert w \right)}\right] \geq \mathbb{E}_q\left[\log\frac{p(x,z)}{q\left(z\vert w \right)}\right] = \mathit{L}\left(w \right)
 \end{equation}
 ELBO můžeme rozepsat pomocí součinového pravidla \eqref{chainrule}, využít vlastností logaritmů a dle definice KL-divergence \eqref{KLdivergence}, přepsat do tvaru
 \begin{align}
-\mathcal{L}\left(w\right) = \mathbb{E}_q\left[\log\frac{p(x,z)}{q\left(z\vert w \right)}\right] & =  \mathbb{E}_q\left[\log\frac{p(x\vert z)p(z)}{q\left(z\vert w \right)}\right] = \mathbb{E}_q\left[\log p(x\vert z)\right] - \mathbb{E}_q\left[\log\frac{p(z)}{q\left(z \vert w \right)}\right] \\ & =  \mathbb{E}_q\left[\log p(x\vert z)\right] - D_{KL}\left(q\left(z\vert w \right) \Vert p(z)\right) 
+\mathit{L}\left(w\right) = \mathbb{E}_q\left[\log\frac{p(x,z)}{q\left(z\vert w \right)}\right] & =  \mathbb{E}_q\left[\log\frac{p(x\vert z)p(z)}{q\left(z\vert w \right)}\right] = \mathbb{E}_q\left[\log p(x\vert z)\right] - \mathbb{E}_q\left[\log\frac{p(z)}{q\left(z \vert w \right)}\right] \\ & =  \mathbb{E}_q\left[\log p(x\vert z)\right] - D_{KL}\left(q\left(z\vert w \right) \Vert p(z)\right) 
 \end{align}
 Budeme-li maximalizovat ELBO přes všechny variační parametry $w$, získáme nejbližší možnou hodnotu k $\log p(x)$. Navíc je maximalizace ELBO ekvivalentní k minimalizaci KL-divergence mezi $q(z\vert w)$ a $p(z\vert w)$, jelikož platí
 \begin{equation}
@@ -702,14 +741,14 @@ D_{KL}\left(q\left(z\vert w \right) \Vert p(z\vert x)\right)
 \end{equation}
 Z toho jednoduchou úpravou dostaneme konečný vztah
 \begin{equation}
-D_{KL}\left(q\left(z\vert w \right) \Vert p(z\vert x)\right) = - \mathcal{L}\left(w\right) + \log p(x)
+D_{KL}\left(q\left(z\vert w \right) \Vert p(z\vert x)\right) = - \mathit{L}\left(w\right) + \log p(x)
 \end{equation}
 
 
 
 \subsubsection*{Příklad}
 Předvedeme příklad, jak ELBO využít v praxi.\\
-Uvažujme pouze sadu dvou pozorování $y_1$ a $y_2$ s  normálním rozdělením $\mathcal{N_\mathrm{i}}(\theta, 1)$ pro i $\in$1,2. Dále uvažujme jeden parametr $\theta$ $\sim$ $\mathcal{N}(0,\alpha)$ a nechť $\alpha$ má inverzní gamma rozdělení, tedy $\alpha$ $\sim$ $i\Gamma(0,0)$. 
+Uvažujme pouze sadu dvou pozorování $y_1$ a $y_2$ s  normálním rozdělením $\pazocal{N_\mathrm{i}}(\theta, 1)$ pro i $\in$1,2. Dále uvažujme jeden parametr $\theta\vert\alpha$ $\sim$ $\pazocal{N}(0,\alpha)$ a nechť $\alpha$ je tzv. Jeffryho prior, tedy $\alpha$ $\sim$ $i\Gamma(0,0+)$. 
 Snažíme se získat sdruženou distribuci parametrů $\theta$ a $\alpha$, tedy $p(\theta, \alpha|y_1,y_2)$. Tuto distribuci můžeme přepsat pomocí definice podmíněné pravděpodobnosti \eqref{podminenapravdepodobnost} a řetězového pravidla \eqref{chainrule} jako
 \begin{equation}
 p(\theta, \alpha|y_1,y_2) = \frac{p(\theta, \alpha,y_1,y_2)}{p(y_1,y_2)} =  \frac{p(y_1|\theta) p(y_2|\theta)p(\theta)p(\alpha)}{p(y_1,y_2)}
@@ -726,46 +765,46 @@ p(y_1,y_2) & = \int p(\theta, \alpha,y_1,y_2) \dd \theta \dd\alpha\\
 &= \int \exp \left\lbrace -\frac{1}{2}(y_1-\theta)^2\right\rbrace \cdot  \exp\left\lbrace -\frac{1}{2}(y_2-\theta)^2\right\rbrace \cdot \frac{1}{\sqrt{\alpha}}\exp\left\lbrace -\frac{\theta^2}{2\alpha}\right\rbrace  \cdot \frac{1}{\alpha}~\dd\theta \dd\alpha
 \end{split}
 \end{equation}
-Po bližším přezkoumání \eqref{prikladkl} zjistíme, že nelze přes $\alpha$ vyintegrovat. Proto použijeme ELBO. Dle definice KL-divergence a za předpokladu $q(\theta,\alpha) = q(\theta)q(\alpha)$ můžeme psát:
+Po bližším přezkoumání \eqref{prikladkl} zjistíme, že nelze přes $\alpha$ vyintegrovat. Proto použijeme ELBO. Dle definice KL-divergence a za předpokladu nezávislosti $q(\theta,\alpha) = q(\theta)q(\alpha)$ můžeme psát:
 \begin{equation}
-D_{KL}\left(q\left(\theta,\alpha\vert\mu,\sigma,\gamma,\delta \right) \Vert p(\theta,\alpha\vert y_1,y_2)\right)  = \int q(\alpha)q(\theta)\ln\left\lbrace \frac{q(\alpha)q(\theta)}{p(\theta,\alpha\vert y_1,y_2)}\right\rbrace  \dd\theta \dd\alpha  =\blacklozenge
+D_{KL}\left(q\left(\theta,\alpha\vert\mu,\sigma,\gamma,\delta \right) \Vert p(\theta,\alpha\vert y_1,y_2)\right)  = \int q(\alpha)q(\theta)\log\left\lbrace \frac{q(\alpha)q(\theta)}{p(\theta,\alpha\vert y_1,y_2)}\right\rbrace  \dd\theta \dd\alpha  =\blacklozenge
 \end{equation} 
- Nezapomínejme, že $q(\theta)$ a $q(\alpha)$ jsou distribuce, pro které zvolíme tvar
+ Nezapomínejme, že $q(\theta)$ a $q(\alpha)$ jsou distribuce, pro které zvolíme pochopitelný tvar o 4 neznámých parametrech $\mu,\sigma,\gamma,\delta$
  \begin{equation*}
 \begin{split}
-q(\theta) = \mathcal{N}(\mu , \sigma) &\\
-q(\alpha) = i\Gamma(\gamma,\delta)&
+q(\theta)& = \pazocal{N}(\mu , \sigma) \\
+q(\alpha)& = \mathrm{invGamma}(\gamma,\delta)
 \end{split}
 \end{equation*}
      Dle \eqref{hustota} navíc víme, že platí $\int q(\alpha)q(\theta) \dd\theta \dd\alpha = 1$. Výraz budeme rozepisovat pomocí pravidel pro logaritmy a postupně upravovat. Výraz $p(y_1,y_2)$ v integrálu je konstanta, kterou můžeme pro jednoduchost zanedbat. Výsledek budeme na konci maximalizovat a konstanta polohu maxima nemění.
 
 \begin{equation}
 \begin{split} 
-\blacklozenge & \propto \int q(\alpha)q(\theta)\ln\frac{q(\alpha)q(\theta)}{p(y_1|\theta)p(y_2|\theta)p(\theta)p(\alpha)} \dd\theta \dd\alpha \\
-& = \int q(\theta)q(\alpha)\left(-\ln{p(y_1|\theta)} - \ln{p(y_2|\theta)} - \ln{p(\theta)} - \ln{p(\alpha)} + \ln{q(\theta)} + \ln{q(\alpha)}\right) \dd \alpha \dd \theta \\&
+\blacklozenge & =  p(y_1,y_2)\cdot \int q(\alpha)q(\theta)\log\frac{q(\alpha)q(\theta)}{p(y_1|\theta)p(y_2|\theta)p(\theta)p(\alpha)} \dd\theta \dd\alpha \\
+& \propto \int q(\theta)q(\alpha)\left(-\log{p(y_1|\theta)} - \log{p(y_2|\theta)} - \log{p(\theta)} - \log{p(\alpha)} + \log{q(\theta)} + \log{q(\alpha)}\right) \dd \alpha \dd \theta \\&
  \end{split}
 \end{equation}
 
-Poslední dva výrazy jsou tzv. entropie pro Gaussovo rozdělení, resp.  inverzní gamma rozdělení. Můžeme využít již známých výsledků:
+Poslední dva výrazy jsou entropie pro Gaussovo rozdělení, resp.  inverzní gamma rozdělení. Můžeme využít již známých výsledků:
 \begin{equation*}
 \begin{split}
-& \int q(\theta)\ln{q(\theta)}~\dd \theta \propto - \frac{1}{2}\ln{\sigma} \\
-& \int q(\alpha)\ln{q(\alpha)}~\dd \alpha = - \gamma - \ln{\delta \Gamma (\gamma)} + (1+\gamma)\psi (\gamma)  
+& \int q(\theta)\log{q(\theta)}~\dd \theta \propto - \frac{1}{2}\log{\sigma} \\
+& \int q(\alpha)\log{q(\alpha)}~\dd \alpha = - \gamma - \log\left( \delta \Gamma (\gamma)\right) + (1+\gamma)\psi (\gamma)  
 \end{split}
 \end{equation*}
 Vypočítejme zbývající výrazy, kde pro jednoduchost budeme pro střední hodnoty využívat značení pomocí špičatých závorek:
 \begin{equation*}
 \begin{split}
- &\int q(\theta)q(\alpha)\ln{p(y_1|\theta)}~\dd \alpha~\dd \theta = \left\langle  -\frac{1}{2}(y_1 - \theta)^2\right\rangle = -\frac{1}{2}\left(y_1^2 -2y_1\mu + \mu^2 + \sigma \right) \\
- &\int q(\theta)q(\alpha)\ln{p(y_2|\theta)}~\dd \alpha~\dd \theta = \left\langle  -\frac{1}{2}(y_2 - \theta)^2\right\rangle = -\frac{1}{2}\left(y_2^2 -2y_2\mu + \mu^2 + \sigma \right) \\
- &\int q(\theta)q(\alpha)\ln{p(\theta)}~\dd \alpha~\dd \theta = \left\langle -\frac{\theta^2}{2\alpha} -\frac{1}{2}\ln{\alpha}  \right\rangle  = -\frac{1}{2}\left(\left(\mu^2 + \sigma  \right)\frac{\gamma}{\delta} + \ln{\delta}- \psi (\gamma) \right) \\
- &\int q(\theta)q(\alpha)\ln{p(\alpha)}~\dd \alpha~\dd \theta = \left\langle - \ln{\alpha}\right\rangle   = \psi (\gamma) - \ln{\delta}
+ &\int q(\theta)q(\alpha)\log{p(y_1|\theta)}~\dd \alpha~\dd \theta = \left\langle  -\frac{1}{2}(y_1 - \theta)^2\right\rangle = -\frac{1}{2}\left(y_1^2 -2y_1\mu + \mu^2 + \sigma \right) \\
+ &\int q(\theta)q(\alpha)\log{p(y_2|\theta)}~\dd \alpha~\dd \theta = \left\langle  -\frac{1}{2}(y_2 - \theta)^2\right\rangle = -\frac{1}{2}\left(y_2^2 -2y_2\mu + \mu^2 + \sigma \right) \\
+ &\int q(\theta)q(\alpha)\log{p(\theta)}~\dd \alpha~\dd \theta = \left\langle -\frac{\theta^2}{2\alpha} -\frac{1}{2}\log{\alpha}  \right\rangle  = -\frac{1}{2}\left(\left(\mu^2 + \sigma  \right)\frac{\gamma}{\delta} + \log{\delta}- \psi (\gamma) \right) \\
+ &\int q(\theta)q(\alpha)\log{p(\alpha)}~\dd \alpha~\dd \theta = \left\langle - \log{\alpha}\right\rangle   = \psi (\gamma) - \log{\delta}
 \end{split}
 \end{equation*}
 Nyní máme všechny výrazy pro výpočet distribuce $q(\theta,\alpha)$ numericky a to pomocí minimalizace KL-divergence přes parametry $\mu,\sigma,\gamma,\delta$.
 
 \section{Teorie grafů}
-Poslední teoretickou kapitolou bude vsuvka do toerie grafů.
+Poslední teoretickou kapitolou bude vsuvka do teorie grafů.
 Tato kapitola poslouží k výhodnému popsání složitějších datových struktur.
 \begin{definition}{(Graf)}
 Grafem $G$ se rozumí dvojice $(V,H)$, kde $V$ je množina vrcholů grafu $G$, $H$ je množina hran tohoto grafu a tyto množiny jsou vzájemně disjunktní.
@@ -797,13 +836,13 @@ Primárním cílem je výhodně zadefinovat stromovou strukturu.  Jak na tyto de
 
 Pokusme se nyní využít KL - divergenci v poněkud složitějším případě. Nalezněme koeficienty polynomu pátého stupně, který nejlépe proloží dva body.\\ Uvažujme následující pravděpodobnostní model
 \begin{equation*}
- P(\textbf{y},\theta \vert X,\alpha) = P(\textbf{y}\vert \theta ,X)P(\theta \vert \alpha)P(\alpha) = \mathcal{N}(X\theta, I)\mathcal{N}(0,\alpha^{-1}I)\Gamma(0,0)
+ P(\textbf{y},\theta \vert X,\alpha) = P(\textbf{y}\vert \theta ,X)P(\theta \vert \alpha)P(\alpha) = \pazocal{N}(X\theta, I)\pazocal{N}(0,\alpha^{-1}I)\Gamma(0,0)
  \end{equation*}
  
 Dále k hledání minima využijme KL divergenci  a aproximační distribuce
 \begin{equation*}
 \begin{split}
-q(\theta) = \mathcal{N}(\hat{\theta} , \Sigma) &\\
+q(\theta) = \pazocal{N}(\hat{\theta} , \Sigma) &\\
 q(\alpha) = \Gamma(\gamma,\delta)&
 \end{split}
 \end{equation*}
@@ -844,14 +883,16 @@ Tímto máme vypočteny všechny výrazy pro optimalizaci pomocí gradientní me
 
 
 \chapter{Generativní modely}\label{generative}
-Ve strojovém učení se setkáváme s dvěma hlavními typy modelů a to jsou generativní modely a diskriminativní modely. Jak už napovídá název této práce, budeme se zde zabývat výhradně generativními modely.
+\section{Generativní model}
+Ve strojovém učení se setkáváme s dvěma hlavními typy modelů a to jsou generativní modely a diskriminativní modely. Každý z nich přistupuje k zadanému problému trochu jinak. Jak už napovídá název této práce, budeme se zde zabývat výhradně generativními modely.
 \begin{definition}{(Generativní model)}
 Mějme nějakou množinu datových záznamů $x$, představující nezávislé proměnné a nějakou množinu $y$, jakožto závislé proměnné. Generativní model je potom takový model, který se učí sdruženou distribuci $p(x,y)$.
 \end{definition}
+
 \subsubsection*{Příklad}
 Jeden ze způsobů jak odhadnout distribuci $p(y,x)$ je využití součinového pravidla \eqref{chainrule}, pomocí kterého získáme
 \begin{equation}
-p(y,x) = p(y\vert x)p(x)
+p(y,x) = p(y\vert x)\cdot p(x)
 \end{equation}
 Problém je tedy převeden na hledání distribucí $p(y\vert x)$ a $p(x)$. Pro ilustraci uvažujme následující množinu datových záznamů.\\
 \begin{figure}[h]
@@ -861,11 +902,11 @@ Problém je tedy převeden na hledání distribucí $p(y\vert x)$ a $p(x)$. Pro 
 
 Určit distribuci $p(x)$ není nic těžkého, jelikož jsou tato data na ose x rozděleny rovnoměrně a to přesněji na intervalu $\left(-1 , 2 \right)$. To můžeme určit například z histogramu x-ových souřadnic jednotlivých bodů. 
 \begin{equation}
-p(x) = U(-1,2)
+p(x) = \mathrm{U}(-1,2)
 \end{equation}
 \\Nyní přejdeme k hledání distribuce $p\left(y\vert x \right)$. Tu můžeme určit pomocí metody nejmenších čtverců \eqref{regresethetahat}, protože víme že pro takovou distribuci platí
 \begin{equation}
- p(y\vert x) = \mathcal{N}\left(\mathbb{X}\theta, \sigma^2 I \right)
+ p(y\vert x) = \pazocal{N}\left(\mathbb{X}\theta, \sigma^2 I \right)
  \end{equation}
 kde $\sigma^2$ je rozptyl jedné složky šumu $\varepsilon_i$ a matice $\mathbb{X}$ je ve tvaru definovaném pomocí \eqref{eq:regresematrix}. Nyní máme obě složky k určení $p(y,x)$, zobrazme proto tzv. contour plot, abychom si udělali představu, jak tato distribuce vypadá. 
 
@@ -873,17 +914,29 @@ kde $\sigma^2$ je rozptyl jedné složky šumu $\varepsilon_i$ a matice $\mathbb
 \includegraphics[width=13cm]{Images/TITLE/data_contour}
 \centering
 \end{figure}
+
+\section{Neuronová síť} 
+V sekci \eqref{least_squares} pojednávající o metodě nejmenších čtverců, jsme zmiňovali  pouze lineární funkci \eqref{linear_combination}
+\begin{equation}\label{linear_combination}
+\hat{y}(x, \theta) = \theta_0 + \theta_1x + \theta_2x^2 + \dots + \theta_px^p = \sum_{i = 0}^{p} {\theta_{i}x^{i}}
+\end{equation}
+Nyní se pokusíme tento model rozšířit tím, že do něj vneseme nelineární funkci $\phi_j\left(x\right)$
+\begin{equation}\label{linear_combination}
+\hat{y}(x, \theta) = \sum_{i = 0}^{p} {\theta_{i}x^{i}}
+\end{equation}
+
+
 \section{Variační autoencoder}
-Cílem  je najít hustotu $p(x)$ vzorků $\left\lbrace x_{i} \right\rbrace^N_{i=1} $, jehož empirická hustota se dá zapsat pomocí Diracovy delta funkce
+Jedna z mnoha metod, jak využít neuronové sítě, je metda variačního autoencoderu. Cílem  je najít hustotu $p(x)$ vzorků $\left\lbrace x_{i} \right\rbrace^N_{i=1} $, jehož empirická hustota se dá zapsat pomocí Diracovy delta funkce
 \begin{equation}
 p_{\mathrm{emp}}(x) = \frac{1}{N}\sum^N_{i=1}\delta \left(x-x_{i}\right)
 \end{equation}
-Předpokládáme následující vztahy $x = f_{\theta}(z) + \epsilon$, $\epsilon \sim \mathcal{N}\left(0,\sigma^2I \right)$ a vzájemnou nezávislost $x_{i}$. Z toho můžeme určit distribuce:
+Předpokládáme následující vztahy $x = f_{\theta}(z) + \epsilon$, $\epsilon \sim \pazocal{N}\left(0,\sigma^2I \right)$ a vzájemnou nezávislost $x_{i}$. Z toho můžeme určit distribuce:
  
 \begin{equation}
 \begin{split}
- p(x\vert z) &= \mathcal{N}\left(f_{\theta}(z),\sigma^2I \right), \\
-p(z) &= \mathcal{N}\left(0,I \right),
+ p(x\vert z) &= \pazocal{N}\left(f_{\theta}(z),\sigma^2I \right), \\
+p(z) &= \pazocal{N}\left(0,I \right),
 \end{split}
  \end{equation}
  a proto má smysl využít následující formu apromaximace
@@ -895,11 +948,11 @@ K nalezení $p(x)$ je třeba najít parametry $\theta$ transformace $f_{\theta}(
 \begin{equation}
 \begin{split}
 \hat{\theta} & = \argmin \sum_{i=1}^n \log p\left(x_{i} \right) \\
-& =  \argmin \sum_{i=1}^n \log \int \mathcal{N}\left(f_{\theta}(z),\sigma \right)\mathcal{N}\left(0,1 \right)    \dd z \\
+& =  \argmin \sum_{i=1}^n \log \int \pazocal{N}\left(f_{\theta}(z),\sigma^2 \right)\pazocal{N}\left(0,1 \right)    \dd z \\
 & = \argmin \sum_{i=1}^N \ \log\sum_{j=1}^N \exp \left\lbrace -\frac{1}{2\sigma^2} \left(x - f_{\theta}(z)  \right)^2 \right\rbrace 
 \end{split}
 \end{equation}
-Integrace přes z je nahrazena vzorkováním. Tento postup ovšem nemusí konvergovat ke správným výsledkům.
+Integrace přes $z$ je nahrazena vzorkováním. Tento postup ovšem nemusí konvergovat ke správným výsledkům.
 \subsection{Variační Bayseova metoda}
 Lepší metodou se ukazuje vzorkovat z podmíněné distribuce $q(z\vert x)$ a využít ELBO: 
 
@@ -917,7 +970,7 @@ Tuto rovnici můžeme přepsat pomocí KL-divergence
 kde pravá strana této rovnice je lower bound $\log p(x)$.
 Jestliže vybereme parametrickou formu distribuce
 \begin{equation}
-q\left(z\vert x \right) = \mathcal{N}\left(\mu_{\phi}(x), \sigma^2_{\phi}(x) \right)
+q\left(z\vert x \right) = \pazocal{N}\left(\mu_{\phi}(x), \diag\left(\sigma^2_{\phi}(x)\right) \right)
 \end{equation}
 můžeme parametry $\theta$ a $\phi$ minimalizovat zároveň a to následovně:
 \begin{equation}
@@ -928,41 +981,70 @@ můžeme parametry $\theta$ a $\phi$ minimalizovat zároveň a to následovně:
 \end{equation}
 V metodě variačního autoencoderu jsou důležité následující dvě věci. První je trik v reparametrizaci
 \begin{equation}
-z = \mu(x) + \sigma^2(x)\odot\epsilon 
+z = \mu(x) + \sigma(x)\odot\epsilon 
 \end{equation}
-a druhý je analytické řešení KL-diveregence dvou gaussovských distribucí
+kde $\odot$ značí Hadamardův součin, čili součin po složkách. Druhý trik je fakt, že KL-divergence dvou gaussovských distribucí má analytické řešení:
 \begin{equation}
 \begin{split}
- D_{KL}\left(q\left(z\vert x \right) \Vert p(z)\right) & = \frac{1}{2}\left[\tr(\sigma^2(x)) - \mu\tran(x)\mu(x) - k - \log\det \left(\sigma^2(x)   \right)\right] \\
- & = \frac{1}{2}\left[\sum_{l = 1}^k(\sigma^2(x)) -\mu\tran(x)\mu(x) - k - \sum_{l = 1}^k\log\sigma^2(x)    \right]
+ D_{KL}\left(q\left(z\vert x \right) \Vert p(z)\right) & = \frac{1}{2}\left[\tr(\sigma_{\phi}^2(x)) - \mu_{\phi}\tran(x)\mu_{\phi}(x) - k - \log\det \left(\sigma_{\phi}^2(x)   \right)\right] \\
+ & = \frac{1}{2}\left[\sum_{l = 1}^k(\sigma_{\phi}^2(x)) -\mu\tran(x)\mu_{\phi}(x) - k - \sum_{l = 1}^k\log\sigma_{\phi}^2(x)    \right]
 \end{split}
 \end{equation}
 Kdybychom totiž nevybrali aproximační distribuci gaussovskou, nemohli bychom tímto způsobem $\hat{\theta},\hat{\phi}$ určit. Toto řešení KL-divergence vede na konečný tvar
 \begin{equation}
-\hat{\theta},\hat{\phi} = \argmin\left[\sum_{i = 1}^n\sum_{j = 1}^p \left[ x_i - f_\theta \left(\mu(x_i) + \sigma^2(x_i)\cdot\epsilon_{i,j}  \right)        \right] - \frac{1}{2}\left[\sum_{l = 1}^k(\sigma^2_{\phi}(x_i)) -\mu_{\phi}\tran(x_i)\mu_{\phi}(x_i) - k - \sum_{l = 1}^k\log\sigma^2_{\phi}(x_i)   \right] \right]
+\hat{\theta},\hat{\phi} = \argmin\left[\sum_{i = 1}^n\sum_{j = 1}^p \left[ x_i - f_\theta \left(\mu_{\phi}(x_i) + \sigma_{\phi}(x_i)\odot\epsilon_{i,j}  \right)        \right] - \frac{1}{2}\left[\sum_{l = 1}^k(\sigma^2_{\phi}(x_i)) -\mu_{\phi}\tran(x_i)\mu_{\phi}(x_i) - k - \sum_{l = 1}^k\log\sigma^2_{\phi}(x_i)   \right] \right]
  \end{equation}
 \subsection*{Příklad}
 
 \chapter{Stromové struktury}
 Stromovou strukturou dat rozumíme množinu datových záznamů popsaných pomocí množiny vrcholů a hran. Vrcholy dané stromové struktury představují jednotlivé body $x$ a $y$. V podstatě si to můžeme představit opravdu jako strom - má jeden kořen, v první úrovni se dělí na $k_1$ větví, každá další větev se v druhé úrovni dělí na $k_{2_i}$ a tak dále.  My se v této práci budeme zabývat pouze kořenem a první úrovní větví. Ilustrujeme to na jednoduchém příkladu.
 \subsection*{Příklad}
-Předpokládejme takový model který ke každému $y_i$, $i \in \hat{n}$ přiřazuje určitý počet $x_{j}^{(k)}$, přičemž celkový počet $x_{j}$ je $j \in \hat{m}$, $m>n$. Tento počet může být generován například Poissonovým rozdělením s danou střední hodnotou $\lambda$, navíc celkový součet těchto počtů musí být $m$.  Jednotlivá $y_i$ potom můžou být určena nějakou kvadratickou závislostí na průměrech k nim přiřazených $x_{j}^{k}$. Všechna $x_j$ jsou přitom generována pomocí uniformního rozdělení. Pokusme se nalézt sdruženou distribuci $p(y, \bar{x})$, kde $\bar{x}_j$ značí výběrový průměr $x_j$ . Použijeme opět součinové pravidlo 
+Mějme vektor pozorování $\textbf{y} = \left(y_1,\dots,y_n \right)$. Předpokládejme takový model, který ke každému $y_i \in \textbf{y}$, přiřazuje vektor datových záznamů $\textbf{x}_{i}$, $i \in \left\lbrace 1,\dots,n \right\rbrace$, přičemž každý $\textbf{x}_i $ má různý počet prvků $x_j^{(i)}$, $j\in\left\lbrace 1,\dots,k_i \right\rbrace$. Máme tedy $\pazocal{X} = \left(\textbf{x}_1,\dots,\textbf{x}_n \right)$, kde každý vektor $\textbf{x}_i$ může mít jiný počet prvků $k_i$. Celkový počet datových záznamů v $\pazocal{X}$ je $m$, platí tedy $\sum_{i = 1}^{n}\sum_{j = 1}^{k_i} x_j^{(i)} = m$.  Přiřazení probíhá následujícím způsobem:
 \begin{equation}
-p(y,\bar{x}_j) = p(y\vert \bar{x}_j)p(\bar{x}_j)
+\begin{split}
+\textbf{x}_1 & \longmapsto  y_1 \\
+\textbf{x}_2 & \longmapsto  y_2\\
+\vdots \\
+\textbf{x}_n & \longmapsto   y_n
+\end{split}
 \end{equation}
-a pokusme se nalézt tyto dvě distribuce. Tento postup je nám známý už z kapitoly \eqref{generative}. Pro určení podmíněné distribuce $p\left(y \vert \bar{x}_j\right)$ použijeme opět metodu nejmenších čtverců a dostaneme 
+
+Jednoduše řečeno je to přiřazení popořadě. Vektor takových $x_j^{(i)} \in \textbf{x}_i$ , přiřazených k jednomu $y_i$ nazveme $\textbf{plukem}$.
+Počet prvků v jednom pluku $k_i$ nechť je generován například Poissonovým rozdělením, $k_i \sim  \mathrm{Po}(\lambda)$ a všechny prvky $\pazocal{X}$ nechť jsou například generovány pomocí uniformního rozdělení, $x_j^{(i)} \sim \mathrm{U}(a,b)$.  Jednotlivá $y_i$ potom můžou být určena nějakou závislostí na $\textbf{agregační funkci}$ prvků v plucích k  nim přiřazených. $\textbf{Agregační funkcí}$ budeme rozumět takovou funkci, která dokáže seskupit, nebo-li agregovat, vícero datových záznamů do jednoho. Nejčastěji používané agregační funkce jsou aritmetický průměr, maximum, minimum, nebo součet.    \\
+ Pokusme se nalézt sdruženou distribuci $p(y, \bar{\textbf{x}}_{i})$, kde  $\bar{\textbf{x}}_{i}$ značí aritmetický průměr prvků v i-tém pluku
+  \begin{equation}
+  \bar{\textbf{x}}_{i} = \frac{1}{k_i}\sum_{l = 1}^{k_i} x_l^{(i)} 
+ \end{equation}
+ 
+  Použijeme opět součinové pravidlo 
 \begin{equation}
-p\left(y \vert \bar{x}\right) = \mathcal{N}\left(\mathbb{X}\theta, \sigma^2 I \right)
+p(y, \bar{\textbf{x}}_{i}) = p(y\vert \bar{\textbf{x}}_{i})\cdot p(\bar{\textbf{x}}_{i})
 \end{equation}
-Ovšem zde jsou prvky matice $\mathbb{X}$ jednotlivé průměry $\bar{x}_i$. Určit distribuci $p(\bar{x}_j)$ lze určit obdobně pomocí histogramu. Navíc víme-li, že se jedná o výběrové průměry, je z centrální limitní věty jasné, že se bude jednat o normální rozdělení. 
+a pokusme se nalézt tyto dvě distribuce. Tento postup je nám známý už z kapitoly \eqref{generative}. Pro určení podmíněné distribuce $p(y, \bar{\textbf{x}}_{i})$ použijeme opět metodu nejmenších čtverců a dostaneme 
 \begin{equation}
-p(\bar{x}_j) = \mathcal{N}\left(\frac{1}{j}\sum_{j = 1}^m\bar{x}_{j}, std(\bar{x}_j) \right)
+p(y, \bar{\textbf{x}}_{i}) = \pazocal{N}\left(\mathbb{X}\theta, \sigma^2 I \right)
 \end{equation}
-Pro vizualizaci sdružené distribuce $p(y, \bar{x}_j)$ využijeme opět contour plot.
+Ovšem zde jsou prvky matice $\mathbb{X}$ jednotlivé prvky z  $\bar{\textbf{x}}_{i}$. Určit distribuci $p(\bar{\textbf{x}}_{i})$ lze určit obdobně pomocí histogramu. Navíc víme-li, že se jedná o výběrové průměry, je z centrální limitní věty jasné, že se bude jednat o normální rozdělení. Střední hodnotu můžeme odhadnout výběrovým průměrem z $\bar{\textbf{x}}_{i}$, tedy
+\begin{equation}
+ \bar{\bar{\textbf{x}}} = \frac{1}{n}\sum_{i = 1}^n \bar{\textbf{x}}_{i}
+\end{equation}
+  a rozptyl odhadneme pomocí výběrového rozptylu 
+  \begin{equation}
+  \Var\left(\bar{\textbf{x}}_{i}\right) = \frac{1}{n}\sum_{i = 1}^n \left( \bar{\textbf{x}}_{i} - \bar{\bar{\textbf{x}}}\right)^2.
+\end{equation}  
+  
+To vede na tvar
+\begin{equation}
+p(\bar{\textbf{x}}_{i}) = \pazocal{N}\left(\bar{\bar{\textbf{x}}}_{i},\Var\left(\bar{\textbf{x}}_{i}\right) \right)
+\end{equation}
+Tímto máme spočtené obě složky. Pro vizualizaci sdružené distribuce $p(y, \bar{\textbf{x}}_{i})$ využijeme opět contour plot. 
 \begin{figure}[h]
 \includegraphics[width=13cm]{Images/TITLE/stromy_joint_distribution_priklad}
 \centering
+\caption{Countour plot distribuce $p(y, \bar{\textbf{x}}_{i})$, kde $m = 200, \lambda = 10, a = 0, b = 10$ a $y$ závisí na $\bar{\textbf{x}}_{i}$ kvadraticky.}
+
 \end{figure}
+Najít distribuci $p(y\vert x)$ není snadný úkol, proto jsme se omezili pouze na hledání distribuce z průměrů jednotlivých složek $\pazocal{X}$.
 \chapter*{Závěr}
 
 \pagestyle{plain}
